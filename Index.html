@@ -1,264 +1,767 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>🎓 Fiches Employés</title>
-<style>
-body {
-  margin: 0;
-  padding: 20px;
-  font-family: "Segoe UI", Arial, sans-serif;
-  background: #f5f7fb;
-}
-
-h1 {
-  text-align: center;
-  color: #2b3a67;
-  font-size: 2rem;
-  margin-bottom: 10px;
-}
-
-/* Menu de navigation */
-#nav-menu {
-  text-align: center;
-  margin-bottom: 20px;
-}
-.nav-btn {
-  display: inline-block;
-  margin: 5px;
-  padding: 10px 20px;
-  background: #2b3a67;
-  color: white;
-  border-radius: 8px;
-  cursor: pointer;
-  font-weight: bold;
-  text-decoration: none;
-}
-.nav-btn:hover {
-  background: #4157a3;
-}
-
-#employee-list {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  gap: 20px;
-}
-
-.employee-card {
-  background: white;
-  border-radius: 15px;
-  padding: 20px;
-  width: 220px;
-  box-shadow: 0 3px 10px rgba(0,0,0,0.1);
-  text-align: center;
-  cursor: pointer;
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
-}
-
-.employee-card:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 6px 15px rgba(0,0,0,0.15);
-}
-
-.employee-name {
-  font-weight: bold;
-  font-size: 1.1rem;
-  color: #1c2951;
-}
-
-.employee-grade {
-  font-size: 0.9rem;
-  color: #6b7280;
-}
-
-#employee-details {
-  display: none;
-  background: white;
-  padding: 25px;
-  border-radius: 15px;
-  max-width: 700px;
-  margin: 20px auto;
-  box-shadow: 0 3px 10px rgba(0,0,0,0.1);
-}
-
-table {
-  width: 100%;
-  border-collapse: collapse;
-  margin-top: 15px;
-}
-
-td {
-  padding: 8px;
-  border-bottom: 1px solid #eee;
-}
-
-td:first-child {
-  font-weight: bold;
-  color: #2b3a67;
-  width: 35%;
-}
-
-.btn-nav {
-  display: inline-block;
-  margin: 10px 5px;
-  background: #2b3a67;
-  color: white;
-  padding: 10px 20px;
-  border-radius: 8px;
-  cursor: pointer;
-  font-weight: bold;
-  text-decoration: none;
-}
-
-.btn-nav:hover {
-  background: #4157a3;
-}
-
-@media (max-width: 600px) {
-  .employee-card { width: 90%; }
-  #employee-details { width: 90%; }
-}
-</style>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>🎓 Fiches Employés — Custom Builder</title>
+  <!-- Le CSS (Partie 2) doit être placé ici ou dans style.css -->
+  <link rel="stylesheet" href="style.css"> <!-- optionnel -->
 </head>
 <body>
+  <!-- Top bar -->
+  <header id="topbar">
+    <h1 id="site-title">🎓 Fiches Employés</h1>
+    <div id="top-actions">
+      <button id="open-custom-btn" title="Mode Customisation (admin)">🎨 Personnaliser</button>
+      <button id="export-config-btn" title="Exporter configuration">⬇ Export</button>
+      <button id="import-config-btn" title="Importer configuration">⬆ Import</button>
+    </div>
+  </header>
 
-<h1>🎓 Fiches Employés</h1>
+  <!-- Navigation (modifiable via config) -->
+  <nav id="nav-menu"></nav>
 
-<!-- Menu de navigation -->
-<div id="nav-menu"></div>
+  <!-- Main area: liste et détails -->
+  <main id="main-area">
+    <section id="employee-list-wrap">
+      <div id="employee-list" aria-live="polite"></div>
+    </section>
 
-<div id="employee-list"></div>
-<div id="employee-details"></div>
+    <section id="employee-details"></section>
+  </main>
 
-<script>
+  <!-- Canvas layer for shapes / widgets -->
+  <div id="canvas-layer" aria-hidden="true"></div>
+
+  <!-- Admin Panel (hidden) -->
+  <aside id="custom-panel" aria-hidden="true">
+    <!-- Auth -->
+    <div id="admin-auth">
+      <input id="admin-password-input" type="password" placeholder="Mot de passe admin">
+      <button id="admin-login-btn">Se connecter</button>
+      <button id="admin-logout-btn" style="display:none">Se déconnecter</button>
+      <div id="auth-msg"></div>
+    </div>
+
+    <!-- Tabs -->
+    <div id="custom-tabs">
+      <button class="tab-btn active" data-tab="appearance">Apparence</button>
+      <button class="tab-btn" data-tab="animations">Animations</button>
+      <button class="tab-btn" data-tab="shapes">Formes</button>
+      <button class="tab-btn" data-tab="text">Texte & Widgets</button>
+      <button class="tab-btn" data-tab="save">Sauvegarder</button>
+    </div>
+
+    <!-- Tab contents -->
+    <div id="tab-contents">
+      <div class="tab" id="tab-appearance">
+        <!-- background / colors / fonts -->
+      </div>
+      <div class="tab" id="tab-animations" style="display:none"></div>
+      <div class="tab" id="tab-shapes" style="display:none"></div>
+      <div class="tab" id="tab-text" style="display:none"></div>
+      <div class="tab" id="tab-save" style="display:none"></div>
+    </div>
+
+    <button id="close-custom-panel">Fermer</button>
+  </aside>
+
+  <!-- Import area (hidden file input) -->
+  <input type="file" id="import-file" accept=".json" style="display:none" />
+
+  <!-- Place JS files below. Part 3 (app) and Part 4 (customizer) -->
+  <script src="app.js"></script>
+  <script src="customizer.js"></script>
+
+</body>
+</html>
+:root{
+  --bg-gradient: linear-gradient(180deg,#f5f7fb,#e9eefb);
+  --page-bg-color: #f5f7fb;
+  --card-bg: #ffffff;
+  --card-radius: 15px;
+  --card-shadow: 0 6px 18px rgba(31,41,55,0.08);
+  --accent: #2b3a67;
+  --text-color: #1c2951;
+  --font-family: "Segoe UI", Roboto, Arial, sans-serif;
+  --title-size: 2rem;
+  --card-hover-zoom: 1.03;
+  --fade-duration: 400ms;
+}
+
+/* global */
+*{box-sizing:border-box}
+html,body{height:100%;margin:0;font-family:var(--font-family);background:var(--bg-gradient);color:var(--text-color)}
+#topbar{display:flex;justify-content:space-between;align-items:center;padding:12px 20px}
+#site-title{font-size:var(--title-size);margin:0}
+#top-actions button{margin-left:10px;padding:8px 12px;border-radius:8px;border:none;background:var(--accent);color:white;cursor:pointer}
+
+/* nav */
+#nav-menu{display:flex;gap:8px;justify-content:center;margin-bottom:12px}
+.nav-item{padding:8px 14px;border-radius:8px;background:rgba(255,255,255,0.15);cursor:pointer;color:white}
+
+/* main layout */
+#main-area{display:flex;gap:20px;padding:0 20px}
+#employee-list-wrap{flex:1}
+#employee-list{display:flex;flex-wrap:wrap;gap:18px;justify-content:center}
+.employee-card{background:var(--card-bg);border-radius:var(--card-radius);padding:18px;width:220px;box-shadow:var(--card-shadow);cursor:pointer;transition:transform 180ms ease, box-shadow 180ms}
+.employee-card:hover{transform:scale(var(--card-hover-zoom))}
+.employee-name{font-weight:700}
+.employee-grade{color:#6b7280;font-size:0.9rem;margin-top:6px}
+
+/* details */
+#employee-details{flex-basis:360px;display:none;background:var(--card-bg);padding:18px;border-radius:12px;box-shadow:var(--card-shadow)}
+
+/* canvas layer: shapes & widgets */
+#canvas-layer{position:fixed;left:0;top:0;width:100%;height:100%;pointer-events:none;z-index:30}
+.canvas-item{position:absolute;pointer-events:auto}
+
+/* custom panel */
+#custom-panel{position:fixed;right:0;top:0;width:420px;height:100%;background:rgba(255,255,255,0.98);box-shadow:-8px 0 30px rgba(0,0,0,0.12);z-index:100;transform:translateX(100%);transition:transform 300ms;overflow:auto;padding:14px}
+#custom-panel.open{transform:translateX(0)}
+#custom-panel h3{margin:6px 0}
+.tab-btn{display:inline-block;padding:8px 10px;margin:4px;border-radius:6px;background:#f0f2f6;cursor:pointer}
+.tab-btn.active{background:var(--accent);color:white}
+
+/* sliders / inputs */
+.control-row{display:flex;gap:8px;align-items:center;margin:8px 0}
+.control-row label{width:40%}
+.control-row input[type="color"], .control-row input[type="range"], .control-row input[type="text"], .control-row select{flex:1;padding:6px}
+
+/* small responsive */
+@media(max-width:900px){
+  #main-area{flex-direction:column;padding:0 12px}
+  #employee-details{order:3;width:100%}
+  #employee-list{justify-content:center}
+}
+// app.js
 const SHEET_ID = "17ZntDHZ8olidnCM1pig311AcjawM4l6HoRxSYFP7KGw";
 const API_KEY = "AIzaSyBtOfa8W5POpJ2KOZSKqxsC4CfZBkYG40E";
 const SHEET_NAME = "Info Employé";
 
+let allEmployeesGlobal = []; // contiendra toutes les fiches
+let currentListContext = []; // employés affichés par filtre (nav)
 let currentIndex = 0;
-let allEmployees = [];
 
-// ⚙️ Modifie ici tes catégories
-const categories = [
-  { name: "Tous", filter: emp => true },
-  { name: "Comptabilité", filter: emp => emp.grade.includes("Compta") },
-  { name: "Marketing", filter: emp => emp.grade.includes("Marketing") },
-  { name: "IT", filter: emp => emp.grade.includes("IT") }
-];
-
-async function loadEmployees() {
-  const url = `https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}/values/${encodeURIComponent(SHEET_NAME)}?key=${API_KEY}`;
-  const res = await fetch(url);
-  const data = await res.json();
-
-  if(!data.values || data.values.length === 0){
-    document.getElementById("employee-list").innerHTML = "<p>Aucune donnée trouvée.</p>";
-    return;
+async function loadEmployeesFromSheet(){
+  try {
+    const url = `https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}/values/${encodeURIComponent(SHEET_NAME)}?key=${API_KEY}`;
+    const res = await fetch(url);
+    const data = await res.json();
+    if(!data.values || data.values.length===0){
+      document.getElementById('employee-list').innerHTML = '<p>Aucune donnée trouvée.</p>';
+      return;
+    }
+    const rows = data.values.filter(r => r.some(cell => String(cell||'').trim() !== ''));
+    const firstRowIsHeader = rows[0].some(v => /[A-Za-zÀ-ÖØ-öø-ÿ]/.test(String(v)));
+    const dataRows = firstRowIsHeader ? rows.slice(1) : rows;
+    const employees = dataRows.map(row => ({
+      id: row[1]||"",
+      nom: row[2]||"",
+      rib: row[3]||"",
+      grade: row[4]||"",
+      tel: row[5]||"",
+      discord: row[6]||"",
+      gmail: row[8]||"",
+      diplome: row[9]||"",
+      entree: row[10]||"",
+      sortie: row[11]||"",
+      sanction: row[12]||"",
+      retrait: row[13]||""
+    })).filter(e=>e.nom.trim() !== "" && e.grade.trim() !== "");
+    allEmployeesGlobal = employees;
+    currentListContext = employees.slice();
+    renderNavDefault(); // crée nav par défaut (optionnel)
+    renderEmployeeList(currentListContext);
+  } catch(err){
+    console.error(err);
+    document.getElementById('employee-list').innerHTML = '<p>Erreur de chargement.</p>';
   }
-
-  const rows = data.values.filter(r => r.some(cell => cell.trim() !== ""));
-  const firstRowIsHeader = rows[0].some(v => v.match(/[A-Za-z]/));
-  const dataRows = firstRowIsHeader ? rows.slice(1) : rows;
-
-  allEmployees = dataRows.map(row => ({
-    id: row[1]||"",
-    nom: row[2]||"",
-    rib: row[3]||"",
-    grade: row[4]||"",
-    tel: row[5]||"",
-    discord: row[6]||"",
-    gmail: row[8]||"",
-    diplome: row[9]||"",
-    entree: row[10]||"",
-    sortie: row[11]||"",
-    sanction: row[12]||"",
-    retrait: row[13]||""
-  })).filter(emp => emp.nom.trim() !== "" && emp.grade.trim() !== "");
-
-  displayNavMenu();
-  displayEmployeeList(allEmployees);
 }
 
-// 🔹 Affiche le menu de navigation
-function displayNavMenu() {
-  const nav = document.getElementById("nav-menu");
-  nav.innerHTML = "";
-  categories.forEach(cat => {
-    const btn = document.createElement("span");
-    btn.className = "nav-btn";
-    btn.textContent = cat.name;
-    btn.addEventListener("click", () => filterCategory(cat.filter));
-    nav.appendChild(btn);
+function renderNavDefault(){
+  // simple nav: Tous + par grade unique
+  const nav = document.getElementById('nav-menu');
+  nav.innerHTML = '';
+  const allBtn = createNavButton('Tous', ()=>{ filterBy(()=>true); });
+  nav.appendChild(allBtn);
+  // build unique grades
+  const grades = Array.from(new Set(allEmployeesGlobal.map(e => e.grade))).slice(0,12);
+  grades.forEach(g=>{
+    if(!g) return;
+    nav.appendChild(createNavButton(g, ()=> filterBy(emp => emp.grade === g)));
+  });
+  // add editable hook: customizer will override nav menu if provided
+}
+
+function createNavButton(label, handler){
+  const el = document.createElement('div');
+  el.className = 'nav-item';
+  el.textContent = label;
+  el.addEventListener('click', handler);
+  return el;
+}
+
+function filterBy(fn){
+  currentListContext = allEmployeesGlobal.filter(fn);
+  renderEmployeeList(currentListContext);
+}
+
+function renderEmployeeList(list){
+  const wrap = document.getElementById('employee-list');
+  wrap.innerHTML = '';
+  document.getElementById('employee-details').style.display = 'none';
+  list.forEach((emp, i) => {
+    const card = document.createElement('div');
+    card.className = 'employee-card';
+    card.innerHTML = `<div class="employee-name">${emp.nom}</div><div class="employee-grade">${emp.grade}</div>`;
+    // use event listener to be robust in Genially etc
+    card.addEventListener('click', ()=> showEmployeeDetails(emp, list, i));
+    wrap.appendChild(card);
   });
 }
 
-// 🔹 Filtrer les employés selon la catégorie
-function filterCategory(filterFn){
-  const filtered = allEmployees.filter(filterFn);
-  displayEmployeeList(filtered);
-}
-
-function displayEmployeeList(employees){
-  const list = document.getElementById("employee-list");
-  list.style.display = "flex";
-  const details = document.getElementById("employee-details");
-  details.style.display = "none";
-  list.innerHTML = "";
-  employees.forEach((emp, i) => {
-    const card = document.createElement("div");
-    card.className = "employee-card";
-    card.innerHTML = `
-      <div class="employee-name">${emp.nom}</div>
-      <div class="employee-grade">${emp.grade}</div>
-    `;
-    card.addEventListener("click", () => showDetails(emp, employees));
-    list.appendChild(card);
-  });
-}
-
-function showDetails(emp, employeesList){
-  currentIndex = employeesList.indexOf(emp);
-  document.getElementById("employee-list").style.display = "none";
-  const details = document.getElementById("employee-details");
-  details.style.display = "block";
-  details.innerHTML = `
+function showEmployeeDetails(emp, listContext, idx){
+  currentListContext = listContext || currentListContext;
+  currentIndex = idx;
+  document.getElementById('employee-list').style.display = 'none';
+  const d = document.getElementById('employee-details');
+  d.style.display = 'block';
+  d.innerHTML = `
     <h2>👤 ${emp.nom}</h2>
     <table>
       <tr><td>ID Unique</td><td>${emp.id}</td></tr>
       <tr><td>RIB</td><td>${emp.rib}</td></tr>
       <tr><td>Grade</td><td>${emp.grade}</td></tr>
-      <tr><td>Numéro de Téléphone</td><td>${emp.tel}</td></tr>
+      <tr><td>Numéro</td><td>${emp.tel}</td></tr>
       <tr><td>ID Discord</td><td>${emp.discord}</td></tr>
       <tr><td>Permis Gmail</td><td>${emp.gmail}</td></tr>
       <tr><td>🎓 Diplôme</td><td>${emp.diplome}</td></tr>
       <tr><td>Date d'entrée</td><td>${emp.entree}</td></tr>
       <tr><td>Date de sortie</td><td>${emp.sortie}</td></tr>
-      <tr><td>Avertissement / Licenciement</td><td>${emp.sanction}</td></tr>
+      <tr><td>Avertissement</td><td>${emp.sanction}</td></tr>
       <tr><td>Date de retrait</td><td>${emp.retrait}</td></tr>
     </table>
-    <div style="text-align:center; margin-top:15px;">
-      <span class="btn-nav" onclick="prevEmployee()">← Précédent</span>
-      <span class="btn-nav" onclick="nextEmployee()">Suivant →</span>
-      <span class="btn-nav" onclick="backToList()">Retour à la liste</span>
+    <div style="text-align:center;margin-top:12px;">
+      <button class="btn-nav" id="prev-btn">← Précédent</button>
+      <button class="btn-nav" id="next-btn">Suivant →</button>
+      <button class="btn-nav" id="back-btn">Retour à la liste</button>
     </div>
   `;
+  document.getElementById('prev-btn').addEventListener('click', ()=> {
+    if(currentIndex>0) showEmployeeDetails(currentListContext[currentIndex-1], currentListContext, currentIndex-1);
+  });
+  document.getElementById('next-btn').addEventListener('click', ()=> {
+    if(currentIndex < currentListContext.length-1) showEmployeeDetails(currentListContext[currentIndex+1], currentListContext, currentIndex+1);
+  });
+  document.getElementById('back-btn').addEventListener('click', ()=>{
+    document.getElementById('employee-details').style.display = 'none';
+    document.getElementById('employee-list').style.display = 'flex';
+  });
 }
 
-// 🔹 Navigation entre employés
-function prevEmployee(){
-  if(currentIndex > 0) showDetails(window.allEmployees[currentIndex - 1], window.allEmployees);
-}
-function nextEmployee(){
-  if(currentIndex < window.allEmployees.length - 1) showDetails(window.allEmployees[currentIndex + 1], window.allEmployees);
-}
-function backToList(){
-  document.getElementById("employee-details").style.display = "none";
-  document.getElementById("employee-list").style.display = "flex";
+// init
+document.addEventListener('DOMContentLoaded', ()=> {
+  loadEmployeesFromSheet();
+});
+// customizer.js
+
+// CONFIG
+const ADMIN_PASSWORD = "admin123";
+let isAdmin = false;
+let currentConfig = {}; // stocke les réglages
+
+// Helper - set CSS var
+function setCSSVar(name, value){
+  document.documentElement.style.setProperty(name, value);
 }
 
-loadEmployees();
-</script>
-</body>
-</html>
+// Open/close panel
+const panel = document.getElementById('custom-panel');
+const openBtn = document.getElementById('open-custom-btn');
+const closeBtn = document.getElementById('close-custom-panel');
+const loginBtn = document.getElementById('admin-login-btn');
+const logoutBtn = document.getElementById('admin-logout-btn');
+const passInput = document.getElementById('admin-password-input');
+const authMsg = document.getElementById('auth-msg');
+
+openBtn.addEventListener('click', ()=> {
+  panel.classList.add('open');
+});
+closeBtn.addEventListener('click', ()=> panel.classList.remove('open'));
+
+// Auth
+loginBtn.addEventListener('click', ()=> {
+  const val = passInput.value;
+  if(val === ADMIN_PASSWORD){
+    isAdmin = true;
+    authMsg.textContent = 'Connecté en admin';
+    loginBtn.style.display = 'none';
+    logoutBtn.style.display = 'inline-block';
+    passInput.style.display = 'none';
+    initCustomizer(); // initialize controls
+  } else {
+    authMsg.textContent = 'Mot de passe incorrect';
+  }
+});
+logoutBtn.addEventListener('click', ()=>{
+  isAdmin = false;
+  authMsg.textContent = 'Déconnecté';
+  loginBtn.style.display = 'inline-block';
+  logoutBtn.style.display = 'none';
+  passInput.style.display = 'inline-block';
+});
+
+// TAB switch
+document.querySelectorAll('.tab-btn').forEach(btn=>{
+  btn.addEventListener('click', ()=>{
+    document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+    btn.classList.add('active');
+    const tabName = btn.dataset.tab;
+    document.querySelectorAll('#tab-contents .tab').forEach(t => t.style.display = 'none');
+    document.getElementById('tab-'+tabName).style.display = 'block';
+  });
+});
+
+// Populate tab contents and controls
+function initCustomizer(){
+  if(!isAdmin) return;
+
+  // Appearance tab
+  const appearance = document.getElementById('tab-appearance');
+  appearance.innerHTML = `
+    <h3>Apparence</h3>
+    <div class="control-row"><label>Fond (dégradé)</label><input type="text" id="bg-input" placeholder="ex: linear-gradient(180deg,#f5f7fb,#e9eefb)"></div>
+    <div class="control-row"><label>Couleur carte</label><input type="color" id="card-color"></div>
+    <div class="control-row"><label>Accent</label><input type="color" id="accent-color"></div>
+    <div class="control-row"><label>Police</label>
+      <select id="font-select">
+        <option value='Segoe UI, Roboto, Arial, sans-serif'>Default</option>
+        <option value='Georgia, serif'>Georgia</option>
+        <option value='"Poppins", "Segoe UI", sans-serif'>Poppins</option>
+        <option value='"Montserrat", "Segoe UI", sans-serif'>Montserrat</option>
+      </select>
+    </div>
+    <div class="control-row"><label>Taille titre</label><input type="range" id="title-size" min="18" max="40" value="32"></div>
+    <div class="control-row"><label>Rayon cartes</label><input type="range" id="card-radius" min="0" max="40" value="15"></div>
+    <div class="control-row"><label>Ombre (opacity)</label><input type="range" id="shadow-opacity" min="0" max="100" value="8"></div>
+    <button id="apply-appearance" class="tab-btn">Appliquer</button>
+  `;
+
+  // Animations tab
+  const anim = document.getElementById('tab-animations');
+  anim.innerHTML = `
+    <h3>Animations</h3>
+    <div class="control-row"><label>Hover zoom</label><input type="range" id="hover-zoom" min="100" max="120" value="103"></div>
+    <div class="control-row"><label>Fade durée (ms)</label><input type="range" id="fade-duration" min="100" max="1500" value="400"></div>
+    <div class="control-row"><label>Activer parallax?</label><select id="parallax-enable"><option value="no">Non</option><option value="yes">Oui</option></select></div>
+    <button id="apply-animations" class="tab-btn">Appliquer</button>
+  `;
+
+  // Shapes tab
+  const shapes = document.getElementById('tab-shapes');
+  shapes.innerHTML = `
+    <h3>Formes & Décors</h3>
+    <div class="control-row"><label>Ajouter forme</label>
+      <select id="shape-type">
+        <option value="circle">Cercle</option>
+        <option value="square">Carré</option>
+        <option value="triangle">Triangle</option>
+        <option value="blob">Blob</option>
+      </select>
+    </div>
+    <div class="control-row"><label>Couleur</label><input type="color" id="shape-color" value="#ffd166"></div>
+    <div class="control-row"><label>Opacité</label><input type="range" id="shape-opacity" min="0" max="100" value="85"></div>
+    <div class="control-row"><label>Taille</label><input type="range" id="shape-size" min="30" max="600" value="120"></div>
+    <div style="margin-top:8px">
+      <button id="add-shape-btn" class="tab-btn">Ajouter</button>
+      <button id="clear-shapes-btn" class="tab-btn">Supprimer tout</button>
+    </div>
+    <p style="font-size:12px;color:#444">Après ajout : clique et fais glisser pour déplacer une forme; utilise la touche Suppr pour supprimer.</p>
+  `;
+
+  // Text & Widgets tab
+  const texttab = document.getElementById('tab-text');
+  texttab.innerHTML = `
+    <h3>Texte & Widgets</h3>
+    <div class="control-row"><label>Ajouter titre</label><input type="text" id="add-title-text" placeholder="Nouveau titre..."></div>
+    <div class="control-row"><label>Couleur</label><input type="color" id="title-color" value="#1c2951"></div>
+    <div class="control-row"><label>Taille</label><input type="range" id="title-size-range" min="12" max="60" value="28"></div>
+    <div style="margin-top:8px">
+      <button id="add-title-btn" class="tab-btn">Ajouter Titre sur page</button>
+    </div>
+    <hr>
+    <h4>Widgets interactifs</h4>
+    <div class="control-row"><label>Type</label>
+      <select id="widget-type">
+        <option value="button">Bouton (action)</option>
+        <option value="modal">Modal</option>
+        <option value="link">Lien</option>
+      </select>
+    </div>
+    <div class="control-row"><label>Libellé</label><input type="text" id="widget-label" placeholder="Ex: Contact"></div>
+    <div class="control-row"><label>Action (URL)</label><input type="text" id="widget-action" placeholder="https://... ou texte pour modal"></div>
+    <div style="margin-top:8px">
+      <button id="add-widget-btn" class="tab-btn">Ajouter Widget</button>
+    </div>
+  `;
+
+  // Save tab
+  const saveTab = document.getElementById('tab-save');
+  saveTab.innerHTML = `
+    <h3>Sauvegarde / Export</h3>
+    <div style="margin:8px 0">
+      <button id="export-json" class="tab-btn">Copier config (JSON)</button>
+      <button id="apply-config" class="tab-btn">Appliquer JSON</button>
+      <button id="reset-config" class="tab-btn">Réinitialiser</button>
+    </div>
+    <p style="font-size:12px;color:#555">Export -> copie le JSON et colle-le dans un fichier config.json dans ton repo pour rendre les changements permanents.</p>
+  `;
+
+  // wire up controls
+  document.getElementById('apply-appearance').onclick = applyAppearance;
+  document.getElementById('apply-animations').onclick = applyAnimations;
+  document.getElementById('add-shape-btn').onclick = addShape;
+  document.getElementById('clear-shapes-btn').onclick = clearShapes;
+  document.getElementById('add-title-btn').onclick = addTitleElement;
+  document.getElementById('add-widget-btn').onclick = addWidget;
+  document.getElementById('export-json').onclick = exportConfigJSON;
+  document.getElementById('apply-config').onclick = ()=> {
+    const json = prompt('Colle ici le JSON de config');
+    if(json) importConfigJSON(JSON.parse(json));
+  };
+  document.getElementById('reset-config').onclick = resetConfig;
+
+  // import/export top buttons
+  document.getElementById('export-config-btn').addEventListener('click', exportConfigJSON);
+  document.getElementById('import-config-btn').addEventListener('click', ()=> document.getElementById('import-file').click());
+  document.getElementById('import-file').addEventListener('change', (e)=>{
+    const f = e.target.files[0];
+    if(!f) return;
+    const reader = new FileReader();
+    reader.onload = ()=> {
+      try {
+        const json = JSON.parse(reader.result);
+        importConfigJSON(json);
+        alert('Config importée');
+      } catch(err){ alert('JSON invalide'); }
+    };
+    reader.readAsText(f);
+  });
+
+  // quick default fill
+  document.getElementById('card-color').value = '#ffffff';
+  document.getElementById('accent-color').value = '#2b3a67';
+  document.getElementById('shape-color').value = '#ffd166';
+}
+
+// APPLY appearance
+function applyAppearance(){
+  const bg = document.getElementById('bg-input').value.trim();
+  if(bg) document.documentElement.style.setProperty('--bg-gradient', bg);
+  const card = document.getElementById('card-color').value;
+  setCSSVar('--card-bg', card);
+  const accent = document.getElementById('accent-color').value;
+  setCSSVar('--accent', accent);
+  const font = document.getElementById('font-select').value;
+  setCSSVar('--font-family', font);
+  const titleSize = document.getElementById('title-size').value + 'px';
+  setCSSVar('--title-size', titleSize);
+  const radius = document.getElementById('card-radius').value + 'px';
+  setCSSVar('--card-radius', radius);
+  const shadowOpacity = document.getElementById('shadow-opacity').value;
+  setCSSVar('--card-shadow', `0 10px 30px rgba(31,41,55,${shadowOpacity/100})`);
+  // save in config
+  currentConfig.appearance = {
+    bg, card, accent, font, titleSize, radius, shadowOpacity
+  };
+}
+
+// APPLY animations
+function applyAnimations(){
+  const zoom = document.getElementById('hover-zoom').value/100;
+  setCSSVar('--card-hover-zoom', zoom);
+  const fade = document.getElementById('fade-duration').value + 'ms';
+  setCSSVar('--fade-duration', fade);
+  const parallax = document.getElementById('parallax-enable').value === 'yes';
+  if(parallax) enableParallax(); else disableParallax();
+  currentConfig.animations = { zoom, fade, parallax };
+}
+
+// PARALLAX (simple)
+let parallaxHandler = null;
+function enableParallax(){
+  if(parallaxHandler) return;
+  parallaxHandler = (e)=>{
+    const x = e.clientX / window.innerWidth;
+    const y = e.clientY / window.innerHeight;
+    document.body.style.backgroundPosition = `${50 + (x-0.5)*10}% ${50 + (y-0.5)*6}%`;
+  };
+  window.addEventListener('mousemove', parallaxHandler);
+}
+function disableParallax(){
+  if(!parallaxHandler) return;
+  window.removeEventListener('mousemove', parallaxHandler);
+  parallaxHandler = null;
+  document.body.style.backgroundPosition = '';
+}
+
+// SHAPES
+const canvas = document.getElementById('canvas-layer');
+let shapeIdCounter = 0;
+function addShape(){
+  const type = document.getElementById('shape-type').value;
+  const color = document.getElementById('shape-color').value;
+  const size = Number(document.getElementById('shape-size').value);
+  const opacity = Number(document.getElementById('shape-opacity').value)/100;
+  const id = 'shape-'+(++shapeIdCounter);
+  const el = document.createElement('div');
+  el.className = 'canvas-item';
+  el.dataset.shapeId = id;
+  el.style.width = size+'px';
+  el.style.height = size+'px';
+  el.style.opacity = opacity;
+  el.style.left = (20 + Math.random()*400) + 'px';
+  el.style.top = (20 + Math.random()*200) + 'px';
+  el.style.zIndex = 40;
+  el.style.cursor = 'grab';
+  // shape visuals
+  if(type==='circle'){
+    el.style.borderRadius = '50%';
+    el.style.background = color;
+  } else if(type==='square'){
+    el.style.background = color;
+  } else if(type==='triangle'){
+    el.style.width = '0'; el.style.height='0';
+    el.style.borderLeft = `${size/2}px solid transparent`;
+    el.style.borderRight = `${size/2}px solid transparent`;
+    el.style.borderBottom = `${size}px solid ${color}`;
+  } else if(type==='blob'){
+    el.style.background = color;
+    el.style.borderRadius = '30% 70% 60% 40% / 40% 35% 65% 60%';
+  }
+  // make draggable & deletable
+  makeDraggable(el);
+  canvas.appendChild(el);
+  // save
+  if(!currentConfig.shapes) currentConfig.shapes = [];
+  currentConfig.shapes.push({id,type,color,size,opacity,left:el.style.left,top:el.style.top});
+}
+
+function clearShapes(){
+  document.querySelectorAll('#canvas-layer .canvas-item').forEach(n=>n.remove());
+  currentConfig.shapes = [];
+}
+
+// draggable helper
+function makeDraggable(el){
+  let isDown=false, startX=0, startY=0, origLeft=0, origTop=0;
+  el.addEventListener('mousedown', e=>{
+    isDown=true;
+    el.style.cursor='grabbing';
+    startX = e.clientX; startY=e.clientY;
+    origLeft = parseFloat(el.style.left) || 0;
+    origTop = parseFloat(el.style.top) || 0;
+    e.preventDefault();
+  });
+  window.addEventListener('mousemove', e=>{
+    if(!isDown) return;
+    const dx = e.clientX - startX;
+    const dy = e.clientY - startY;
+    el.style.left = (origLeft + dx) + 'px';
+    el.style.top = (origTop + dy) + 'px';
+  });
+  window.addEventListener('mouseup', ()=>{
+    if(isDown){
+      isDown=false;
+      el.style.cursor='grab';
+    }
+  });
+  // delete on Delete key when selected (simple)
+  el.addEventListener('dblclick', ()=> {
+    if(confirm('Supprimer cette forme ?')) el.remove();
+  });
+}
+
+// TEXT ELEMENTS
+function addTitleElement(){
+  const text = document.getElementById('add-title-text').value || 'Titre';
+  const color = document.getElementById('title-color').value;
+  const size = document.getElementById('title-size-range').value + 'px';
+  const el = document.createElement('div');
+  el.className = 'canvas-item';
+  el.style.left = '30px';
+  el.style.top = '30px';
+  el.style.color = color;
+  el.style.fontSize = size;
+  el.style.fontWeight = '700';
+  el.style.zIndex = 45;
+  el.textContent = text;
+  makeDraggable(el);
+  canvas.appendChild(el);
+  if(!currentConfig.texts) currentConfig.texts = [];
+  currentConfig.texts.push({text,color,size,left:el.style.left,top:el.style.top});
+}
+
+// WIDGETS
+function addWidget(){
+  const type = document.getElementById('widget-type').value;
+  const label = document.getElementById('widget-label').value || 'Widget';
+  const action = document.getElementById('widget-action').value || '';
+  const el = document.createElement('button');
+  el.className = 'canvas-item';
+  el.textContent = label;
+  el.style.left = '60px';
+  el.style.top = '200px';
+  el.style.padding = '10px 14px';
+  el.style.borderRadius = '8px';
+  el.style.background = '#2b3a67';
+  el.style.color = 'white';
+  el.style.zIndex = 50;
+  if(type === 'link'){
+    el.addEventListener('click', ()=> window.open(action, '_blank'));
+  } else if(type === 'modal'){
+    el.addEventListener('click', ()=> alert(action || 'Modal: pas de contenu'));
+  } else if(type === 'button'){
+    el.addEventListener('click', ()=> alert(action || 'Action bouton'));
+  }
+  makeDraggable(el);
+  canvas.appendChild(el);
+  if(!currentConfig.widgets) currentConfig.widgets = [];
+  currentConfig.widgets.push({type,label,action,left:el.style.left,top:el.style.top});
+}
+
+// EXPORT / IMPORT
+function exportConfigJSON(){
+  // collect dynamic positions
+  const shapes = [];
+  document.querySelectorAll('#canvas-layer .canvas-item').forEach(el=>{
+    const obj = {
+      tag: el.tagName.toLowerCase(),
+      html: el.outerHTML,
+      left: el.style.left,
+      top: el.style.top
+    };
+    shapes.push(obj);
+  });
+  currentConfig.runtime = {
+    shapes, cssVars: getCurrentCSSVars()
+  };
+  const json = JSON.stringify(currentConfig, null, 2);
+  // copy to clipboard
+  navigator.clipboard.writeText(json).then(()=> alert('Configuration copiée dans le presse-papier.'));
+}
+
+function importConfigJSON(json){
+  // apply appearance
+  if(json.appearance) {
+    if(json.appearance.bg) document.documentElement.style.setProperty('--bg-gradient', json.appearance.bg);
+    if(json.appearance.card) setCSSVar('--card-bg', json.appearance.card);
+    if(json.appearance.accent) setCSSVar('--accent', json.appearance.accent);
+    if(json.appearance.font) setCSSVar('--font-family', json.appearance.font);
+    if(json.appearance.titleSize) setCSSVar('--title-size', json.appearance.titleSize);
+    if(json.appearance.radius) setCSSVar('--card-radius', json.appearance.radius);
+  }
+  if(json.animations){
+    setCSSVar('--card-hover-zoom', json.animations.zoom || 1.03);
+    setCSSVar('--fade-duration', (json.animations.fade) || '400ms');
+  }
+  // shapes/widgets/texts
+  if(json.shapes || json.texts || json.widgets){
+    // clear first
+    document.querySelectorAll('#canvas-layer .canvas-item').forEach(n => n.remove());
+    if(json.shapes) json.shapes.forEach(s=>{
+      // recreate minimal shape
+      const el = document.createElement('div');
+      el.className = 'canvas-item';
+      el.style.left = s.left || '20px';
+      el.style.top = s.top || '20px';
+      el.style.width = (s.size||120)+'px';
+      el.style.height = (s.size||120)+'px';
+      el.style.opacity = s.opacity !== undefined ? s.opacity : 0.85;
+      el.style.zIndex = 40;
+      if(s.type==='circle'){ el.style.background = s.color; el.style.borderRadius='50%'; }
+      else if(s.type==='square'){ el.style.background = s.color; }
+      else if(s.type==='blob'){ el.style.background = s.color; el.style.borderRadius='30% 70% 60% 40% / 40% 35% 65% 60%'; }
+      else if(s.type==='triangle'){ el.style.width='0'; el.style.height='0'; el.style.borderLeft = `${(s.size||120)/2}px solid transparent`; el.style.borderRight = `${(s.size||120)/2}px solid transparent`; el.style.borderBottom = `${(s.size||120)}px solid ${s.color}`; }
+      makeDraggable(el);
+      canvas.appendChild(el);
+    });
+    if(json.texts) json.texts.forEach(t=>{
+      const el = document.createElement('div');
+      el.className = 'canvas-item';
+      el.textContent = t.text;
+      el.style.left = t.left || '30px';
+      el.style.top = t.top || '30px';
+      el.style.color = t.color || '#000';
+      el.style.fontSize = t.size || '28px';
+      makeDraggable(el);
+      canvas.appendChild(el);
+    });
+    if(json.widgets) json.widgets.forEach(w=>{
+      const el = document.createElement('button');
+      el.className = 'canvas-item';
+      el.textContent = w.label || 'Widget';
+      el.style.left = w.left || '30px';
+      el.style.top = w.top || '100px';
+      el.style.padding = '8px 12px';
+      el.style.borderRadius = '8px';
+      el.style.background = '#2b3a67';
+      el.style.color = 'white';
+      if(w.type==='link') el.addEventListener('click', ()=> window.open(w.action, '_blank'));
+      else el.addEventListener('click', ()=> alert(w.action || 'Widget'));
+      makeDraggable(el);
+      canvas.appendChild(el);
+    });
+  }
+  currentConfig = json;
+}
+
+function resetConfig(){
+  if(!confirm('Réinitialiser la configuration ?')) return;
+  currentConfig = {};
+  // remove canvas items
+  document.querySelectorAll('#canvas-layer .canvas-item').forEach(n=>n.remove());
+  // reset CSS vars to default
+  document.documentElement.style.removeProperty('--bg-gradient');
+  document.documentElement.style.removeProperty('--card-bg');
+  document.documentElement.style.removeProperty('--accent');
+  document.documentElement.style.removeProperty('--font-family');
+  document.documentElement.style.removeProperty('--title-size');
+  document.documentElement.style.removeProperty('--card-radius');
+  document.documentElement.style.removeProperty('--card-shadow');
+  document.documentElement.style.removeProperty('--card-hover-zoom');
+  alert('Réinitialisé');
+}
+
+// utility to capture css vars
+function getCurrentCSSVars(){
+  const style = getComputedStyle(document.documentElement);
+  return {
+    bg: style.getPropertyValue('--bg-gradient'),
+    card: style.getPropertyValue('--card-bg'),
+    accent: style.getPropertyValue('--accent'),
+    font: style.getPropertyValue('--font-family'),
+    titleSize: style.getPropertyValue('--title-size'),
+    radius: style.getPropertyValue('--card-radius'),
+    shadow: style.getPropertyValue('--card-shadow'),
+    hoverZoom: style.getPropertyValue('--card-hover-zoom')
+  };
+}
+
+// show/hide panel based on admin
+// (panel can be opened without auth but controls only active after login)
+openBtn.addEventListener('click', ()=> {
+  if(!isAdmin) {
+    authMsg.textContent = 'Entrez le mot de passe pour activer le mode admin';
+  }
+});
+
+// initialize basic listeners for top export/import (non-admin)
+document.getElementById('export-config-btn').addEventListener('click', ()=> {
+  const cfg = JSON.stringify(currentConfig, null, 2);
+  navigator.clipboard.writeText(cfg).then(()=> alert('Config copiée'));
+});
+document.getElementById('import-config-btn').addEventListener('click', ()=> document.getElementById('import-file').click());
+
+/* end of customizer.js */
