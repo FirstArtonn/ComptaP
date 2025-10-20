@@ -16,7 +16,27 @@ h1 {
   text-align: center;
   color: #2b3a67;
   font-size: 2rem;
-  margin-bottom: 30px;
+  margin-bottom: 10px;
+}
+
+/* Menu de navigation */
+#nav-menu {
+  text-align: center;
+  margin-bottom: 20px;
+}
+.nav-btn {
+  display: inline-block;
+  margin: 5px;
+  padding: 10px 20px;
+  background: #2b3a67;
+  color: white;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: bold;
+  text-decoration: none;
+}
+.nav-btn:hover {
+  background: #4157a3;
 }
 
 #employee-list {
@@ -105,6 +125,10 @@ td:first-child {
 <body>
 
 <h1>🎓 Fiches Employés</h1>
+
+<!-- Menu de navigation -->
+<div id="nav-menu"></div>
+
 <div id="employee-list"></div>
 <div id="employee-details"></div>
 
@@ -114,6 +138,15 @@ const API_KEY = "AIzaSyBtOfa8W5POpJ2KOZSKqxsC4CfZBkYG40E";
 const SHEET_NAME = "Info Employé";
 
 let currentIndex = 0;
+let allEmployees = [];
+
+// ⚙️ Modifie ici tes catégories
+const categories = [
+  { name: "Tous", filter: emp => true },
+  { name: "Comptabilité", filter: emp => emp.grade.includes("Compta") },
+  { name: "Marketing", filter: emp => emp.grade.includes("Marketing") },
+  { name: "IT", filter: emp => emp.grade.includes("IT") }
+];
 
 async function loadEmployees() {
   const url = `https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}/values/${encodeURIComponent(SHEET_NAME)}?key=${API_KEY}`;
@@ -129,7 +162,7 @@ async function loadEmployees() {
   const firstRowIsHeader = rows[0].some(v => v.match(/[A-Za-z]/));
   const dataRows = firstRowIsHeader ? rows.slice(1) : rows;
 
-  const employees = dataRows.map(row => ({
+  allEmployees = dataRows.map(row => ({
     id: row[1]||"",
     nom: row[2]||"",
     rib: row[3]||"",
@@ -144,12 +177,34 @@ async function loadEmployees() {
     retrait: row[13]||""
   })).filter(emp => emp.nom.trim() !== "" && emp.grade.trim() !== "");
 
-  window.allEmployees = employees;
-  displayEmployeeList(employees);
+  displayNavMenu();
+  displayEmployeeList(allEmployees);
+}
+
+// 🔹 Affiche le menu de navigation
+function displayNavMenu() {
+  const nav = document.getElementById("nav-menu");
+  nav.innerHTML = "";
+  categories.forEach(cat => {
+    const btn = document.createElement("span");
+    btn.className = "nav-btn";
+    btn.textContent = cat.name;
+    btn.addEventListener("click", () => filterCategory(cat.filter));
+    nav.appendChild(btn);
+  });
+}
+
+// 🔹 Filtrer les employés selon la catégorie
+function filterCategory(filterFn){
+  const filtered = allEmployees.filter(filterFn);
+  displayEmployeeList(filtered);
 }
 
 function displayEmployeeList(employees){
   const list = document.getElementById("employee-list");
+  list.style.display = "flex";
+  const details = document.getElementById("employee-details");
+  details.style.display = "none";
   list.innerHTML = "";
   employees.forEach((emp, i) => {
     const card = document.createElement("div");
@@ -158,15 +213,14 @@ function displayEmployeeList(employees){
       <div class="employee-name">${emp.nom}</div>
       <div class="employee-grade">${emp.grade}</div>
     `;
-    card.addEventListener("click", () => showDetails(i));
+    card.addEventListener("click", () => showDetails(emp, employees));
     list.appendChild(card);
   });
 }
 
-function showDetails(index){
-  currentIndex = index;
-  const emp = window.allEmployees[index];
-  document.getElementById("employee-list").style.display = "none"; // Cache la liste
+function showDetails(emp, employeesList){
+  currentIndex = employeesList.indexOf(emp);
+  document.getElementById("employee-list").style.display = "none";
   const details = document.getElementById("employee-details");
   details.style.display = "block";
   details.innerHTML = `
@@ -192,14 +246,13 @@ function showDetails(index){
   `;
 }
 
+// 🔹 Navigation entre employés
 function prevEmployee(){
-  if(currentIndex > 0) showDetails(currentIndex - 1);
+  if(currentIndex > 0) showDetails(window.allEmployees[currentIndex - 1], window.allEmployees);
 }
-
 function nextEmployee(){
-  if(currentIndex < window.allEmployees.length - 1) showDetails(currentIndex + 1);
+  if(currentIndex < window.allEmployees.length - 1) showDetails(window.allEmployees[currentIndex + 1], window.allEmployees);
 }
-
 function backToList(){
   document.getElementById("employee-details").style.display = "none";
   document.getElementById("employee-list").style.display = "flex";
@@ -207,6 +260,5 @@ function backToList(){
 
 loadEmployees();
 </script>
-
 </body>
 </html>
