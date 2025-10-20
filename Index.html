@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>🎓 Fiches Employés</title>
+<style>
+body {
+  margin: 0;
+  padding: 20px;
+  font-family: "Segoe UI", Arial, sans-serif;
+  background: #f5f7fb;
+}
+
+h1 {
+  text-align: center;
+  color: #2b3a67;
+  font-size: 2rem;
+  margin-bottom: 30px;
+}
+
+#employee-list {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 20px;
+}
+
+.employee-card {
+  background: white;
+  border-radius: 15px;
+  padding: 20px;
+  width: 220px;
+  box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+  text-align: center;
+  cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.employee-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 6px 15px rgba(0,0,0,0.15);
+}
+
+.employee-name {
+  font-weight: bold;
+  font-size: 1.1rem;
+  color: #1c2951;
+}
+
+.employee-grade {
+  font-size: 0.9rem;
+  color: #6b7280;
+}
+
+#employee-details {
+  display: none;
+  background: white;
+  padding: 25px;
+  border-radius: 15px;
+  max-width: 700px;
+  margin: 20px auto;
+  box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 15px;
+}
+
+td {
+  padding: 8px;
+  border-bottom: 1px solid #eee;
+}
+
+td:first-child {
+  font-weight: bold;
+  color: #2b3a67;
+  width: 35%;
+}
+
+.btn-nav {
+  display: inline-block;
+  margin: 10px 5px;
+  background: #2b3a67;
+  color: white;
+  padding: 10px 20px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: bold;
+  text-decoration: none;
+}
+
+.btn-nav:hover {
+  background: #4157a3;
+}
+
+@media (max-width: 600px) {
+  .employee-card { width: 90%; }
+  #employee-details { width: 90%; }
+}
+</style>
+</head>
+<body>
+
+<h1>🎓 Fiches Employés</h1>
+<div id="employee-list"></div>
+<div id="employee-details"></div>
+
+<script>
+const SHEET_ID = "17ZntDHZ8olidnCM1pig311AcjawM4l6HoRxSYFP7KGw";
+const API_KEY = "AIzaSyBtOfa8W5POpJ2KOZSKqxsC4CfZBkYG40E";
+const SHEET_NAME = "Info Employé";
+
+let currentIndex = 0;
+
+async function loadEmployees() {
+  const url = `https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}/values/${encodeURIComponent(SHEET_NAME)}?key=${API_KEY}`;
+  const res = await fetch(url);
+  const data = await res.json();
+
+  if(!data.values || data.values.length === 0){
+    document.getElementById("employee-list").innerHTML = "<p>Aucune donnée trouvée.</p>";
+    return;
+  }
+
+  const rows = data.values.filter(r => r.some(cell => cell.trim() !== ""));
+  const firstRowIsHeader = rows[0].some(v => v.match(/[A-Za-z]/));
+  const dataRows = firstRowIsHeader ? rows.slice(1) : rows;
+
+  const employees = dataRows.map(row => ({
+    id: row[1]||"",
+    nom: row[2]||"",
+    rib: row[3]||"",
+    grade: row[4]||"",
+    tel: row[5]||"",
+    discord: row[6]||"",
+    gmail: row[8]||"",
+    diplome: row[9]||"",
+    entree: row[10]||"",
+    sortie: row[11]||"",
+    sanction: row[12]||"",
+    retrait: row[13]||""
+  })).filter(emp => emp.nom.trim() !== "" && emp.grade.trim() !== "");
+
+  window.allEmployees = employees;
+  displayEmployeeList(employees);
+}
+
+function displayEmployeeList(employees){
+  const list = document.getElementById("employee-list");
+  list.innerHTML = "";
+  employees.forEach((emp, i) => {
+    const card = document.createElement("div");
+    card.className = "employee-card";
+    card.innerHTML = `
+      <div class="employee-name">${emp.nom}</div>
+      <div class="employee-grade">${emp.grade}</div>
+    `;
+    card.addEventListener("click", () => showDetails(i));
+    list.appendChild(card);
+  });
+}
+
+function showDetails(index){
+  currentIndex = index;
+  const emp = window.allEmployees[index];
+  document.getElementById("employee-list").style.display = "none"; // Cache la liste
+  const details = document.getElementById("employee-details");
+  details.style.display = "block";
+  details.innerHTML = `
+    <h2>👤 ${emp.nom}</h2>
+    <table>
+      <tr><td>ID Unique</td><td>${emp.id}</td></tr>
+      <tr><td>RIB</td><td>${emp.rib}</td></tr>
+      <tr><td>Grade</td><td>${emp.grade}</td></tr>
+      <tr><td>Numéro de Téléphone</td><td>${emp.tel}</td></tr>
+      <tr><td>ID Discord</td><td>${emp.discord}</td></tr>
+      <tr><td>Permis Gmail</td><td>${emp.gmail}</td></tr>
+      <tr><td>🎓 Diplôme</td><td>${emp.diplome}</td></tr>
+      <tr><td>Date d'entrée</td><td>${emp.entree}</td></tr>
+      <tr><td>Date de sortie</td><td>${emp.sortie}</td></tr>
+      <tr><td>Avertissement / Licenciement</td><td>${emp.sanction}</td></tr>
+      <tr><td>Date de retrait</td><td>${emp.retrait}</td></tr>
+    </table>
+    <div style="text-align:center; margin-top:15px;">
+      <span class="btn-nav" onclick="prevEmployee()">← Précédent</span>
+      <span class="btn-nav" onclick="nextEmployee()">Suivant →</span>
+      <span class="btn-nav" onclick="backToList()">Retour à la liste</span>
+    </div>
+  `;
+}
+
+function prevEmployee(){
+  if(currentIndex > 0) showDetails(currentIndex - 1);
+}
+
+function nextEmployee(){
+  if(currentIndex < window.allEmployees.length - 1) showDetails(currentIndex + 1);
+}
+
+function backToList(){
+  document.getElementById("employee-details").style.display = "none";
+  document.getElementById("employee-list").style.display = "flex";
+}
+
+loadEmployees();
+</script>
+
+</body>
+</html>
