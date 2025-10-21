@@ -1,231 +1,338 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>🎓 Fiches Employés</title>
-  <style>
-    /* ✅ Permet le scroll vertical et bloque le scroll horizontal */
-    html, body {
-      overflow-y: auto;         /* active le scroll vers le bas */
-      overflow-x: hidden;       /* empêche le scroll horizontal */
-      scroll-behavior: smooth;  /* rend le défilement fluide */
-    }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>🎓 Fiches Employés</title>
+<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+body {
+  margin: 0;
+  padding: 0;
+  font-family: 'Roboto', sans-serif;
+  background: #f5f7fb;
+  color: #2b3a67;
+  transition: background 0.5s, color 0.5s;
+}
 
-    body {
-      font-family: "Segoe UI", Arial, sans-serif;
-      background: #f5f7fb;
-      margin: 0;
-      padding: 20px;
-    }
-    h1 {
-      text-align: center;
-      color: #2b3a67;
-      font-size: 2rem;
-    }
-    #employee-list {
-      display: flex;
-      flex-wrap: wrap;
-      justify-content: center;
-      gap: 20px;
-      margin-top: 30px;
-    }
-    .employee-card {
-      background: white;
-      border-radius: 15px;
-      padding: 20px;
-      width: 220px;
-      box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
-      text-align: center;
-      transition: transform 0.2s ease, box-shadow 0.2s ease;
-      cursor: pointer;
-    }
-    .employee-card:hover {
-      transform: translateY(-5px);
-      box-shadow: 0 6px 15px rgba(0, 0, 0, 0.15);
-    }
-    .employee-name {
-      font-weight: bold;
-      font-size: 1.1rem;
-      color: #1c2951;
-    }
-    .employee-grade {
-      font-size: 0.9rem;
-      color: #6b7280;
-    }
-    #employee-details {
-      display: none;
-      background: white;
-      margin: 40px auto;
-      padding: 25px;
-      border-radius: 15px;
-      box-shadow: 0 3px 10px rgba(0,0,0,0.1);
-      max-width: 700px;
-    }
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      margin-top: 15px;
-    }
-    td {
-      padding: 8px;
-      border-bottom: 1px solid #eee;
-    }
-    td:first-child {
-      font-weight: bold;
-      color: #2b3a67;
-      width: 35%;
-    }
-    .back-btn {
-      display: inline-block;
-      margin-top: 15px;
-      background: #2b3a67;
-      color: white;
-      padding: 10px 20px;
-      border-radius: 8px;
-      text-decoration: none;
-      font-weight: bold;
-      transition: background 0.2s ease;
-    }
-    .back-btn:hover {
-      background: #4157a3;
-    }
-  </style>
+/* Mode sombre */
+body.dark-mode {
+  background: #1c1c2c;
+  color: #f0f0f5;
+}
+body.dark-mode header {
+  background: linear-gradient(135deg,#2c2c54,#3c3c8a);
+}
+body.dark-mode .nav-item.active { background: #3c3c8a; }
+body.dark-mode .nav-item:hover { background: #2c2c54; }
+body.dark-mode .employee-card { background: #2b2b3a; color: #f0f0f5; }
+body.dark-mode #employee-details { background: #2b2b3a; color: #f0f0f5; border-top-color: #3c3c8a; }
+body.dark-mode table td:first-child { color: #ccc; }
+body.dark-mode .btn-nav { background: linear-gradient(90deg,#2c2c54,#3c3c8a); }
+
+/* HEADER */
+header {
+  background: linear-gradient(135deg,#667eea,#764ba2);
+  color: white;
+  padding: 30px 20px;
+  text-align: center;
+  border-bottom-left-radius: 40px;
+  border-bottom-right-radius: 40px;
+  box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+  position: relative;
+}
+header h1 { font-size: 2.8rem; margin: 0; }
+header p { margin-top: 8px; font-size: 1.1rem; color: #e0e0ff; }
+
+/* Lune */
+#moon {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  font-size: 1.8rem;
+  cursor: pointer;
+  transition: transform 0.5s;
+}
+#moon.rotate { transform: rotate(360deg); }
+
+/* NAVIGATION */
+#main-nav {
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+  margin: 30px 0;
+}
+.nav-item {
+  padding: 10px 28px;
+  border-radius: 50px;
+  background: #ffffffdd;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+}
+.nav-item:hover { background: #667eea; color: #fff; transform: translateY(-3px);}
+.nav-item.active { background: #764ba2; color: #fff; box-shadow: 0 5px 15px rgba(0,0,0,0.15); }
+
+/* TABS */
+.tab { display: none; opacity: 0; transform: translateY(20px); transition: all 0.5s ease;}
+.tab.active { display: block; opacity: 1; transform: translateY(0); }
+
+/* LISTE EMPLOYÉS */
+#employee-list {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 25px;
+  padding: 20px;
+}
+
+/* CARTE EMPLOYÉ */
+.employee-card {
+  background: #ffffff;
+  border-radius: 20px;
+  padding: 20px;
+  width: 220px;
+  text-align: center;
+  cursor: pointer;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  box-shadow: 0 5px 15px rgba(0,0,0,0.07);
+  position: relative;
+}
+.employee-card:hover {
+  transform: translateY(-5px) scale(1.03);
+  box-shadow: 0 12px 25px rgba(0,0,0,0.12);
+}
+.employee-name { font-weight: 700; font-size: 1.2rem; margin-bottom: 5px; }
+.employee-grade { font-weight: 500; color: #667eea; }
+
+/* Animation impulsion pour sanctions */
+@keyframes pulse {
+  0%, 100% { transform: scale(1); box-shadow: 0 5px 15px rgba(0,0,0,0.07); }
+  50% { transform: scale(1.05); box-shadow: 0 12px 25px rgba(0,0,0,0.15); }
+}
+.employee-card.pulse { animation: pulse 1.5s infinite; }
+
+/* Séparateurs doux */
+.section-separator {
+  height: 2px;
+  width: 60px;
+  margin: 40px auto;
+  background: linear-gradient(to right, #764ba2, #667eea);
+  border-radius: 1px;
+}
+
+/* DÉTAILS EMPLOYÉ */
+#employee-details {
+  display: none;
+  background: #ffffff;
+  color: #2b3a67;
+  padding: 25px 30px;
+  border-radius: 25px;
+  max-width: 720px;
+  margin: 40px auto;
+  box-shadow: 0 15px 30px rgba(0,0,0,0.08);
+  border-top: 6px solid #667eea;
+  position: relative;
+  animation: fadeIn 0.4s ease;
+}
+@keyframes fadeIn { from {opacity:0; transform:translateY(-10px);} to {opacity:1; transform:translateY(0);} }
+
+#employee-details .close-btn {
+  position: absolute;
+  top: 15px;
+  right: 20px;
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: #667eea;
+  cursor: pointer;
+  transition: color 0.3s ease;
+}
+#employee-details .close-btn:hover { color: #764ba2; }
+
+/* TABLE */
+table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+td { padding: 10px; border-bottom: 1px solid #eee; }
+td:first-child { font-weight: 600; color: #2b3a67; }
+
+/* BOUTONS */
+.btn-nav {
+  display: inline-block;
+  margin: 12px 6px;
+  background: linear-gradient(90deg,#667eea,#764ba2);
+  color: white;
+  padding: 10px 22px;
+  border-radius: 18px;
+  cursor: pointer;
+  font-weight: bold;
+  text-decoration: none;
+  transition: all 0.3s ease;
+}
+.btn-nav:hover { transform: translateY(-2px); box-shadow: 0 6px 15px rgba(0,0,0,0.15); }
+
+/* RESPONSIVE */
+@media (max-width: 650px){
+  .employee-card { width: 90%; }
+  #employee-details { width: 90%; }
+}
+</style>
 </head>
 <body>
 
+<header>
   <h1>🎓 Fiches Employés</h1>
-  <div id="employee-list"></div>
-  <div id="employee-details"></div>
+  <p>Visualisez, gérez et explorez les informations de vos employés</p>
+  <div id="moon">🌙</div>
+</header>
 
-  <script>
-    const SHEET_ID = "17ZntDHZ8olidnCM1pig311AcjawM4l6HoRxSYFP7KGw";
-    const API_KEY = "AIzaSyBtOfa8W5POpJ2KOZSKqxsC4CfZBkYG40E"; // 🔑 Remplace ici par ta clé API
-    const SHEET_NAME = "Info Employé";
+<nav id="main-nav">
+  <div class="nav-item active" data-tab="accueil">Accueil</div>
+  <div class="nav-item" data-tab="employe">Employé</div>
+  <div class="nav-item" data-tab="recrutement">Recrutement</div>
+  <div class="nav-item" data-tab="absence">Absence</div>
+</nav>
 
-    async function loadEmployees() {
-      const url = `https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}/values/${encodeURIComponent(SHEET_NAME)}?key=${API_KEY}`;
-      const res = await fetch(url);
-      const data = await res.json();
+<div id="tab-contents">
+  <div class="tab active" id="tab-accueil">
+    <p>Bienvenue sur la page d'accueil ! Utilisez le menu pour naviguer entre les sections.</p>
+    <div class="section-separator"></div>
+  </div>
+  <div class="tab" id="tab-employe">
+    <div id="employee-list"></div>
+    <div id="employee-details"></div>
+  </div>
+  <div class="tab" id="tab-recrutement">
+    <p>Contenu Recrutement ici</p>
+    <div class="section-separator"></div>
+  </div>
+  <div class="tab" id="tab-absence">
+    <p>Contenu Absence ici</p>
+    <div class="section-separator"></div>
+  </div>
+</div>
 
-      if (!data.values || data.values.length === 0) {
-        document.getElementById("employee-list").innerHTML = "<p>Aucune donnée trouvée.</p>";
-        return;
-      }
-
-      // 🧹 Supprimer les lignes vides
-      const rows = data.values.filter(r => r.some(cell => cell.trim() !== ""));
-      if (rows.length === 0) {
-        document.getElementById("employee-list").innerHTML = "<p>Aucune donnée valide trouvée.</p>";
-        return;
-      }
-
-      // 🧠 Détecter si la première ligne est un en-tête
-      const firstRowIsHeader = rows[0].some(v => v.match(/[A-Za-z]/));
-      const dataRows = firstRowIsHeader ? rows.slice(1) : rows;
-
-      const employees = dataRows
-        .map(row => ({
-          id: row[1] || "",
-          nom: row[2] || "",
-          rib: row[3] || "",
-          grade: row[4] || "",
-          tel: row[5] || "",
-          discord: row[6] || "",
-          gmail: row[8] || "",
-          diplome: row[9] || "",
-          entree: row[10] || "",
-          sortie: row[11] || "",
-          sanction: row[12] || "",
-          retrait: row[13] || "",
-        }))
-        // 🚫 Filtrer les employés sans prénom ou sans grade
-        .filter(emp => emp.nom.trim() !== "" && emp.grade.trim() !== "");
-
-      if (employees.length === 0) {
-        document.getElementById("employee-list").innerHTML = "<p>Aucun employé valide trouvé.</p>";
-        return;
-      }
-
-      window.allEmployees = employees;
-      displayEmployeeList(employees);
-    }
-
-function displayEmployeeList(employees) {
-  const list = document.getElementById("employee-list");
-  list.innerHTML = "";
-
-  // Crée un objet { grade: [employés] }
-  const categories = {};
-  employees.forEach(emp => {
-    const grade = emp.grade || "Autre";
-    if (!categories[grade]) categories[grade] = [];
-    categories[grade].push(emp);
+<script>
+// NAVIGATION TABS
+document.querySelectorAll('#main-nav .nav-item').forEach(item=>{
+  item.addEventListener('click', ()=>{
+    document.querySelectorAll('#main-nav .nav-item').forEach(i=>i.classList.remove('active'));
+    item.classList.add('active');
+    const tab = item.dataset.tab;
+    document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+    document.getElementById('tab-'+tab).classList.add('active');
   });
+});
 
-  // Parcours chaque catégorie
-  for (const grade in categories) {
-    // Titre de la catégorie
-    const sectionTitle = document.createElement("h2");
-    sectionTitle.textContent = grade;
-    sectionTitle.style.color = "#2b3a67";
-    sectionTitle.style.marginTop = "40px";
-    list.appendChild(sectionTitle);
+// MODE SOMBRE
+const moon = document.getElementById("moon");
+moon.addEventListener("click", ()=>{
+  document.body.classList.toggle("dark-mode");
+  moon.classList.add("rotate");
+  setTimeout(()=>moon.classList.remove("rotate"), 600);
+});
 
-    // Conteneur des cartes de cette catégorie
-    const sectionDiv = document.createElement("div");
-    sectionDiv.style.display = "flex";
-    sectionDiv.style.flexWrap = "wrap";
-    sectionDiv.style.gap = "20px";
+// GOOGLE SHEET
+const SHEET_ID="17ZntDHZ8olidnCM1pig311AcjawM4l6HoRxSYFP7KGw";
+const API_KEY="AIzaSyBtOfa8W5POpJ2KOZSKqxsC4CfZBkYG40E";
+const SHEET_NAME="Info Employé";
+let currentIndex=0;
+let filteredEmployees = [];
 
-    categories[grade].forEach(emp => {
-      const card = document.createElement("div");
-      card.className = "employee-card";
-      card.innerHTML = `
-        <div class="employee-name">${emp.nom}</div>
-        <div class="employee-grade">${emp.grade}</div>
-      `;
-      card.addEventListener("click", () => showDetails(emp.nom));
-      sectionDiv.appendChild(card);
-    });
-
-    list.appendChild(sectionDiv);
+async function loadEmployees(){
+  const url=`https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}/values/${encodeURIComponent(SHEET_NAME)}?key=${API_KEY}`;
+  const res=await fetch(url);
+  const data=await res.json();
+  if(!data.values||data.values.length===0){
+    document.getElementById("employee-list").innerHTML="<p>Aucune donnée trouvée.</p>";
+    return;
   }
+  const rows=data.values.filter(r=>r.some(c=>c.trim()!==""));
+  const firstRowIsHeader=rows[0].some(v=>v.match(/[A-Za-z]/));
+  const dataRows=firstRowIsHeader?rows.slice(1):rows;
+  const employees=dataRows.map(r=>({
+    id:r[1]||"",
+    nom:r[2]||"",
+    rib:r[3]||"",
+    grade:r[4]||"",
+    tel:r[5]||"",
+    discord:r[6]||"",
+    gmail:r[8]||"",
+    diplome:r[9]||"",
+    entree:r[10]||"",
+    sortie:r[11]||"",
+    sanction:r[12]||"",
+    retrait:r[13]||""
+  })).filter(emp=>emp.nom.trim()!=="");
+  window.allEmployees = employees;
+  displayEmployeeList(employees);
 }
 
-    function showDetails(nom) {
-      const emp = window.allEmployees.find(e => e.nom === nom);
-      if (!emp) return;
+function displayEmployeeList(employees){
+  const list=document.getElementById("employee-list");
+  list.innerHTML="";
+  filteredEmployees = employees.filter(emp=> emp.nom !== "Prénom / Nom" && emp.nom !== "Démission/Licenciement");
 
-      const details = document.getElementById("employee-details");
-      details.style.display = "block";
-      details.innerHTML = `
-        <h2>👤 ${emp.nom}</h2>
-        <table>
-          <tr><td>ID Unique</td><td>${emp.id}</td></tr>
-          <tr><td>RIB</td><td>${emp.rib}</td></tr>
-          <tr><td>Grade</td><td>${emp.grade}</td></tr>
-          <tr><td>Numéro de Téléphone</td><td>${emp.tel}</td></tr>
-          <tr><td>ID Discord</td><td>${emp.discord}</td></tr>
-          <tr><td>Permis Gmail</td><td>${emp.gmail}</td></tr>
-          <tr><td>🎓 Diplôme</td><td>${emp.diplome}</td></tr>
-          <tr><td>Date d'entrée</td><td>${emp.entree}</td></tr>
-          <tr><td>Date de sortie</td><td>${emp.sortie}</td></tr>
-          <tr><td>Avertissement / Licenciement</td><td>${emp.sanction}</td></tr>
-          <tr><td>Date de retrait</td><td>${emp.retrait}</td></tr>
-        </table>
-        <a href="#" class="back-btn" onclick="hideDetails()">← Retour</a>
-      `;
-      window.scrollTo({ top: 0, behavior: "smooth" });
+  filteredEmployees.forEach((emp,i)=>{
+    const card=document.createElement("div");
+    card.className="employee-card";
+
+    // couleurs et pulsation pour sanctions
+    if(emp.sanction === "Avertissement 1"){
+      card.style.background = "linear-gradient(145deg, #FFD700, #FFC107)";
+      card.classList.add("pulse");
+    } else if(emp.sanction === "Avertissement 2"){
+      card.style.background = "linear-gradient(145deg, #FF8C00, #FF7F50)";
+      card.classList.add("pulse");
+    } else if(emp.sanction === "Licenciement"){
+      card.style.background = "linear-gradient(145deg, #FF3333, #CC0000)";
+      card.classList.add("pulse");
     }
 
-    function hideDetails() {
-      document.getElementById("employee-details").style.display = "none";
-    }
+    card.innerHTML=`<div class="employee-name">${emp.nom}</div><div class="employee-grade">${emp.grade}</div>`;
+    card.addEventListener("click",()=>showDetails(i));
+    list.appendChild(card);
+  });
+}
 
-    loadEmployees();
-  </script>
+function showDetails(index){
+  currentIndex=index;
+  const emp = filteredEmployees[index];
+  const details = document.getElementById("employee-details");
+  document.getElementById("employee-list").style.display="none";
+  details.style.display="block";
+  details.innerHTML=`
+    <span class="close-btn" onclick="backToList()">✖</span>
+    <h2>👤 ${emp.nom}</h2>
+    <table>
+      <tr><td>ID Unique</td><td>${emp.id}</td></tr>
+      <tr><td>RIB</td><td>${emp.rib}</td></tr>
+      <tr><td>Grade</td><td>${emp.grade}</td></tr>
+      <tr><td>Numéro</td><td>${emp.tel}</td></tr>
+      <tr><td>ID Discord</td><td>${emp.discord}</td></tr>
+      <tr><td>Permis Gmail</td><td>${emp.gmail}</td></tr>
+      <tr><td>🎓 Diplôme</td><td>${emp.diplome}</td></tr>
+      <tr><td>Date d'entrée</td><td>${emp.entree}</td></tr>
+      <tr><td>Date de sortie</td><td>${emp.sortie}</td></tr>
+      <tr><td>Avertissement / Licenciement</td><td>${emp.sanction}</td></tr>
+      <tr><td>Date de retrait</td><td>${emp.retrait}</td></tr>
+    </table>
+    <div style="text-align:center; margin-top:15px;">
+      <span class="btn-nav" onclick="prevEmployee()">← Précédent</span>
+      <span class="btn-nav" onclick="nextEmployee()">Suivant →</span>
+    </div>
+  `;
+  window.scrollTo({top:0, behavior:"smooth"});
+}
 
+function backToList(){
+  document.getElementById("employee-details").style.display="none";
+  document.getElementById("employee-list").style.display="flex";
+}
+
+function prevEmployee(){ if(currentIndex>0) showDetails(currentIndex-1); }
+function nextEmployee(){ if(currentIndex<filteredEmployees.length-1) showDetails(currentIndex+1); }
+
+loadEmployees();
+</script>
 </body>
 </html>
-
