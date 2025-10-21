@@ -151,15 +151,47 @@
       displayEmployeeList(employees);
     }
 
-    function displayEmployeeList(employees) {
-      const list = document.getElementById("employee-list");
-      list.innerHTML = employees.map(emp => `
-        <div class="employee-card" onclick="showDetails('${emp.nom.replace(/'/g, "\\'")}')">
-          <div class="employee-name">${emp.nom}</div>
-          <div class="employee-grade">${emp.grade}</div>
-        </div>
-      `).join("");
-    }
+function displayEmployeeList(employees) {
+  const list = document.getElementById("employee-list");
+  list.innerHTML = "";
+
+  // Crée un objet { grade: [employés] }
+  const categories = {};
+  employees.forEach(emp => {
+    const grade = emp.grade || "Autre";
+    if (!categories[grade]) categories[grade] = [];
+    categories[grade].push(emp);
+  });
+
+  // Parcours chaque catégorie
+  for (const grade in categories) {
+    // Titre de la catégorie
+    const sectionTitle = document.createElement("h2");
+    sectionTitle.textContent = grade;
+    sectionTitle.style.color = "#2b3a67";
+    sectionTitle.style.marginTop = "40px";
+    list.appendChild(sectionTitle);
+
+    // Conteneur des cartes de cette catégorie
+    const sectionDiv = document.createElement("div");
+    sectionDiv.style.display = "flex";
+    sectionDiv.style.flexWrap = "wrap";
+    sectionDiv.style.gap = "20px";
+
+    categories[grade].forEach(emp => {
+      const card = document.createElement("div");
+      card.className = "employee-card";
+      card.innerHTML = `
+        <div class="employee-name">${emp.nom}</div>
+        <div class="employee-grade">${emp.grade}</div>
+      `;
+      card.addEventListener("click", () => showDetails(emp.nom));
+      sectionDiv.appendChild(card);
+    });
+
+    list.appendChild(sectionDiv);
+  }
+}
 
     function showDetails(nom) {
       const emp = window.allEmployees.find(e => e.nom === nom);
@@ -196,3 +228,4 @@
 
 </body>
 </html>
+
