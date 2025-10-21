@@ -1,333 +1,205 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>🎓 Fiches Employés</title>
-  <style>
-    :root {
-      --bg-gradient: linear-gradient(180deg,#f5f7fb,#e9eefb);
-      --page-bg-color: #f5f7fb;
-      --card-bg: #ffffff;
-      --card-radius: 15px;
-      --card-shadow: 0 6px 18px rgba(31,41,55,0.08);
-      --accent: #2b3a67;
-      --text-color: #1c2951;
-      --font-family: "Segoe UI", Roboto, Arial, sans-serif;
-      --title-size: 2rem;
-      --card-hover-zoom: 1.03;
-      --fade-duration: 400ms;
-    }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>🎓 Fiches Employés</title>
+<style>
+body {
+  margin: 0;
+  padding: 20px;
+  font-family: "Segoe UI", Arial, sans-serif;
+  background: #f5f7fb;
+}
 
-    * { box-sizing: border-box; }
-    html, body {
-      height: 100%;
-      margin: 0;
-      font-family: var(--font-family);
-      background: var(--bg-gradient);
-      color: var(--text-color);
-    }
+h1 {
+  text-align: center;
+  color: #2b3a67;
+  font-size: 2rem;
+  margin-bottom: 30px;
+}
 
-    #topbar {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 12px 20px;
-      background: var(--accent);
-      color: white;
-    }
+.employee-card {
+  background: white;
+  border-radius: 15px;
+  padding: 20px;
+  width: 220px;
+  margin: 10px;
+  box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+  text-align: center;
+  cursor: pointer;
+  display: inline-block;
+}
 
-    #site-title {
-      font-size: var(--title-size);
-      margin: 0;
-    }
+.employee-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 6px 15px rgba(0,0,0,0.15);
+}
 
-    #top-actions button {
-      margin-left: 10px;
-      padding: 8px 12px;
-      border-radius: 8px;
-      border: none;
-      background: white;
-      color: var(--accent);
-      cursor: pointer;
-      font-weight: 600;
-    }
+.employee-name {
+  font-weight: bold;
+  font-size: 1.1rem;
+  color: #1c2951;
+}
 
-    #nav-menu {
-      display: flex;
-      gap: 8px;
-      justify-content: center;
-      margin: 15px 0;
-    }
+.employee-grade {
+  font-size: 0.9rem;
+  color: #6b7280;
+}
 
-    .nav-item {
-      padding: 8px 14px;
-      border-radius: 8px;
-      background: var(--accent);
-      color: white;
-      cursor: pointer;
-      transition: background 0.2s;
-    }
-    .nav-item:hover { background: #4157a3; }
+#employee-details {
+  display: none;
+  background: white;
+  padding: 25px;
+  border-radius: 15px;
+  max-width: 700px;
+  margin: 0 auto;
+  box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+}
 
-    #main-area {
-      display: flex;
-      gap: 20px;
-      padding: 0 20px;
-    }
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 15px;
+}
 
-    #employee-list {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 18px;
-      justify-content: center;
-      flex: 1;
-    }
+td {
+  padding: 8px;
+  border-bottom: 1px solid #eee;
+}
 
-    .employee-card {
-      background: var(--card-bg);
-      border-radius: var(--card-radius);
-      padding: 18px;
-      width: 220px;
-      box-shadow: var(--card-shadow);
-      cursor: pointer;
-      transition: transform 180ms ease, box-shadow 180ms;
-      text-align: center;
-    }
-    .employee-card:hover {
-      transform: scale(var(--card-hover-zoom));
-    }
-    .employee-name {
-      font-weight: 700;
-      margin-bottom: 5px;
-    }
-    .employee-grade {
-      color: #6b7280;
-      font-size: 0.9rem;
-    }
+td:first-child {
+  font-weight: bold;
+  color: #2b3a67;
+  width: 35%;
+}
 
-    #employee-details {
-      flex-basis: 360px;
-      display: none;
-      background: var(--card-bg);
-      padding: 20px;
-      border-radius: 12px;
-      box-shadow: var(--card-shadow);
-    }
+.btn-nav {
+  display: inline-block;
+  margin: 10px 5px;
+  background: #2b3a67;
+  color: white;
+  padding: 10px 20px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: bold;
+  text-decoration: none;
+}
 
-    #employee-details h2 {
-      margin-top: 0;
-    }
+.btn-nav:hover {
+  background: #4157a3;
+}
 
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      margin-top: 10px;
-    }
-
-    td {
-      padding: 8px;
-      border-bottom: 1px solid #eee;
-    }
-
-    td:first-child {
-      font-weight: bold;
-      color: var(--accent);
-      width: 40%;
-    }
-
-    .nav-btns {
-      margin-top: 15px;
-      display: flex;
-      justify-content: space-between;
-    }
-
-    button.nav {
-      background: var(--accent);
-      color: white;
-      padding: 8px 14px;
-      border: none;
-      border-radius: 8px;
-      cursor: pointer;
-    }
-
-    button.nav:hover {
-      background: #4157a3;
-    }
-
-    /* Admin customization panel */
-    #custom-panel {
-      position: fixed;
-      top: 0;
-      right: 0;
-      width: 420px;
-      height: 100%;
-      background: #fff;
-      box-shadow: -8px 0 30px rgba(0,0,0,0.12);
-      transform: translateX(100%);
-      transition: transform 300ms;
-      overflow: auto;
-      padding: 14px;
-      z-index: 100;
-    }
-    #custom-panel.open { transform: translateX(0); }
-
-    #canvas-layer {
-      position: fixed;
-      top: 0; left: 0;
-      width: 100%; height: 100%;
-      pointer-events: none;
-      z-index: 30;
-    }
-
-    .canvas-item {
-      position: absolute;
-      pointer-events: auto;
-    }
-
-    @media (max-width: 900px) {
-      #main-area { flex-direction: column; }
-      #employee-details { order: 3; width: 100%; }
-    }
-  </style>
+#employee-list {
+  text-align: center;
+}
+</style>
 </head>
 <body>
-  <div id="topbar">
-    <h1 id="site-title">🎓 Fiches Employés</h1>
-    <div id="top-actions">
-      <button id="open-custom-btn">🎨 Personnaliser</button>
-      <button id="export-config-btn">⬇ Export</button>
-      <button id="import-config-btn">⬆ Import</button>
-      <input type="file" id="import-file" style="display:none">
+
+<h1>🎓 Fiches Employés</h1>
+<div id="employee-list"></div>
+<div id="employee-details"></div>
+
+<script>
+const SHEET_ID = "17ZntDHZ8olidnCM1pig311AcjawM4l6HoRxSYFP7KGw";
+const API_KEY = "AIzaSyBtOfa8W5POpJ2KOZSKqxsC4CfZBkYG40E";
+const SHEET_NAME = "Info Employé";
+
+let currentIndex = 0; // pour pagination
+
+async function loadEmployees() {
+  const url = `https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}/values/${encodeURIComponent(SHEET_NAME)}?key=${API_KEY}`;
+  const res = await fetch(url);
+  const data = await res.json();
+
+  if(!data.values || data.values.length===0){
+    document.getElementById("employee-list").innerHTML="<p>Aucune donnée trouvée.</p>";
+    return;
+  }
+
+  const rows = data.values.filter(r=>r.some(cell=>cell.trim()!==""));
+  const firstRowIsHeader = rows[0].some(v=>v.match(/[A-Za-z]/));
+  const dataRows = firstRowIsHeader ? rows.slice(1) : rows;
+
+  const employees = dataRows.map(row=>({
+    id: row[1]||"",
+    nom: row[2]||"",
+    rib: row[3]||"",
+    grade: row[4]||"",
+    tel: row[5]||"",
+    discord: row[6]||"",
+    gmail: row[8]||"",
+    diplome: row[9]||"",
+    entree: row[10]||"",
+    sortie: row[11]||"",
+    sanction: row[12]||"",
+    retrait: row[13]||""
+  })).filter(emp=>emp.nom.trim()!=="" && emp.grade.trim()!=="");
+
+  window.allEmployees = employees;
+  displayEmployeeList(employees);
+}
+
+function displayEmployeeList(employees){
+  const list = document.getElementById("employee-list");
+  list.innerHTML = ""; // vide le contenu
+  employees.forEach((emp, i) => {
+    const card = document.createElement("div");
+    card.className = "employee-card";
+    card.innerHTML = `
+      <div class="employee-name">${emp.nom}</div>
+      <div class="employee-grade">${emp.grade}</div>
+    `;
+    // ✅ Ajout du listener au lieu de onclick
+    card.addEventListener("click", () => showDetails(i));
+    list.appendChild(card);
+  });
+}
+
+
+function showDetails(index){
+  currentIndex = index;
+  const emp = window.allEmployees[index];
+  const details = document.getElementById("employee-details");
+  details.style.display = "block";
+  details.innerHTML=`
+    <h2>👤 ${emp.nom}</h2>
+    <table>
+      <tr><td>ID Unique</td><td>${emp.id}</td></tr>
+      <tr><td>RIB</td><td>${emp.rib}</td></tr>
+      <tr><td>Grade</td><td>${emp.grade}</td></tr>
+      <tr><td>Numéro de Téléphone</td><td>${emp.tel}</td></tr>
+      <tr><td>ID Discord</td><td>${emp.discord}</td></tr>
+      <tr><td>Permis Gmail</td><td>${emp.gmail}</td></tr>
+      <tr><td>🎓 Diplôme</td><td>${emp.diplome}</td></tr>
+      <tr><td>Date d'entrée</td><td>${emp.entree}</td></tr>
+      <tr><td>Date de sortie</td><td>${emp.sortie}</td></tr>
+      <tr><td>Avertissement / Licenciement</td><td>${emp.sanction}</td></tr>
+      <tr><td>Date de retrait</td><td>${emp.retrait}</td></tr>
+    </table>
+    <div style="text-align:center; margin-top:15px;">
+      <span class="btn-nav" onclick="prevEmployee()">← Précédent</span>
+      <span class="btn-nav" onclick="nextEmployee()">Suivant →</span>
+      <span class="btn-nav" onclick="backToList()">Retour à la liste</span>
     </div>
-  </div>
+  `;
+}
 
-  <div id="nav-menu"></div>
+function prevEmployee(){
+  if(currentIndex>0) showDetails(currentIndex-1);
+}
 
-  <div id="main-area">
-    <div id="employee-list"></div>
-    <div id="employee-details"></div>
-  </div>
+function nextEmployee(){
+  if(currentIndex<window.allEmployees.length-1) showDetails(currentIndex+1);
+}
 
-  <div id="canvas-layer"></div>
+function backToList(){
+  document.getElementById("employee-details").style.display="none";
+}
 
-  <!-- === Panneau de personnalisation === -->
-  <div id="custom-panel">
-    <h2>Mode Admin</h2>
-    <p>Mot de passe admin</p>
-    <input type="password" id="admin-password-input" placeholder="admin123">
-    <button id="admin-login-btn">Se connecter</button>
-    <button id="admin-logout-btn" style="display:none;">Se déconnecter</button>
-    <p id="auth-msg"></p>
+loadEmployees();
+</script>
 
-    <div id="tab-contents"></div>
-    <button id="close-custom-panel">Fermer</button>
-  </div>
-
-  <script>
-    const SHEET_ID = "17ZntDHZ8olidnCM1pig311AcjawM4l6HoRxSYFP7KGw";
-    const API_KEY = "AIzaSyBtOfa8W5POpJ2KOZSKqxsC4CfZBkYG40E";
-    const SHEET_NAME = "Info Employé";
-
-    let allEmployees = [];
-    let currentList = [];
-
-    async function loadEmployees() {
-      const url = `https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}/values/${encodeURIComponent(SHEET_NAME)}?key=${API_KEY}`;
-      const res = await fetch(url);
-      const data = await res.json();
-      if (!data.values) return;
-
-      const rows = data.values.filter(r => r.some(c => (c || "").trim() !== ""));
-      const hasHeader = rows[0].some(v => /[A-Za-zÀ-ÖØ-öø-ÿ]/.test(v));
-      const dataRows = hasHeader ? rows.slice(1) : rows;
-
-      allEmployees = dataRows.map(row => ({
-        id: row[1] || "",
-        nom: row[2] || "",
-        rib: row[3] || "",
-        grade: row[4] || "",
-        tel: row[5] || "",
-        discord: row[6] || "",
-        gmail: row[8] || "",
-        diplome: row[9] || "",
-        entree: row[10] || "",
-        sortie: row[11] || "",
-        sanction: row[12] || "",
-        retrait: row[13] || ""
-      })).filter(e => e.nom && e.grade);
-
-      currentList = [...allEmployees];
-      renderNav();
-      renderList();
-    }
-
-    function renderNav() {
-      const nav = document.getElementById("nav-menu");
-      nav.innerHTML = "";
-      const allBtn = document.createElement("div");
-      allBtn.className = "nav-item";
-      allBtn.textContent = "Tous";
-      allBtn.onclick = () => {
-        currentList = [...allEmployees];
-        renderList();
-      };
-      nav.appendChild(allBtn);
-
-      const grades = [...new Set(allEmployees.map(e => e.grade))];
-      grades.forEach(g => {
-        const btn = document.createElement("div");
-        btn.className = "nav-item";
-        btn.textContent = g;
-        btn.onclick = () => {
-          currentList = allEmployees.filter(e => e.grade === g);
-          renderList();
-        };
-        nav.appendChild(btn);
-      });
-    }
-
-    function renderList() {
-      const list = document.getElementById("employee-list");
-      const details = document.getElementById("employee-details");
-      details.style.display = "none";
-      list.style.display = "flex";
-      list.innerHTML = currentList.map(emp => `
-        <div class="employee-card" onclick="showDetails('${emp.nom.replace(/'/g,"\\'")}')">
-          <div class="employee-name">${emp.nom}</div>
-          <div class="employee-grade">${emp.grade}</div>
-        </div>
-      `).join("");
-    }
-
-    function showDetails(nom) {
-      const emp = allEmployees.find(e => e.nom === nom);
-      const details = document.getElementById("employee-details");
-      const list = document.getElementById("employee-list");
-      list.style.display = "none";
-      details.style.display = "block";
-      details.innerHTML = `
-        <h2>👤 ${emp.nom}</h2>
-        <table>
-          <tr><td>ID Unique</td><td>${emp.id}</td></tr>
-          <tr><td>RIB</td><td>${emp.rib}</td></tr>
-          <tr><td>Grade</td><td>${emp.grade}</td></tr>
-          <tr><td>Téléphone</td><td>${emp.tel}</td></tr>
-          <tr><td>ID Discord</td><td>${emp.discord}</td></tr>
-          <tr><td>Permis Gmail</td><td>${emp.gmail}</td></tr>
-          <tr><td>🎓 Diplôme</td><td>${emp.diplome}</td></tr>
-          <tr><td>Date d'entrée</td><td>${emp.entree}</td></tr>
-          <tr><td>Date de sortie</td><td>${emp.sortie}</td></tr>
-          <tr><td>Avertissement</td><td>${emp.sanction}</td></tr>
-          <tr><td>Date retrait</td><td>${emp.retrait}</td></tr>
-        </table>
-        <div class="nav-btns">
-          <button class="nav" onclick="renderList()">← Retour</button>
-        </div>
-      `;
-    }
-
-    document.addEventListener("DOMContentLoaded", loadEmployees);
-  </script>
 </body>
 </html>
