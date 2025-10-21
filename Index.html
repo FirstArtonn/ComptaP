@@ -1,659 +1,333 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>🎓 Fiches Employés — Custom Builder</title>
-<style>
-/* ==== VARIABLES & RESET ==== */
-:root{
-  --bg-gradient: linear-gradient(180deg,#f5f7fb,#e9eefb);
-  --accent: #2b3a67;
-  --card-bg:#fff;
-  --card-radius:14px;
-  --card-shadow: 0 8px 24px rgba(31,41,55,0.06);
-  --text:#1c2951;
-  --font: "Segoe UI", Roboto, Arial, sans-serif;
-  --title-size:28px;
-  --hover-zoom:1.03;
-}
-*{box-sizing:border-box}
-html,body{height:100%;margin:0;font-family:var(--font);background:var(--bg-gradient);color:var(--text)}
-a{color:inherit}
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>🎓 Fiches Employés</title>
+  <style>
+    :root {
+      --bg-gradient: linear-gradient(180deg,#f5f7fb,#e9eefb);
+      --page-bg-color: #f5f7fb;
+      --card-bg: #ffffff;
+      --card-radius: 15px;
+      --card-shadow: 0 6px 18px rgba(31,41,55,0.08);
+      --accent: #2b3a67;
+      --text-color: #1c2951;
+      --font-family: "Segoe UI", Roboto, Arial, sans-serif;
+      --title-size: 2rem;
+      --card-hover-zoom: 1.03;
+      --fade-duration: 400ms;
+    }
 
-/* ==== TOPBAR ==== */
-#topbar{display:flex;align-items:center;justify-content:space-between;padding:12px 18px;background:var(--accent);color:#fff;position:sticky;top:0;z-index:60}
-#site-title{font-size:var(--title-size);margin:0}
-.top-actions {display:flex;gap:8px;align-items:center}
-.top-actions button{background:#fff;border:none;padding:8px 12px;border-radius:8px;cursor:pointer;color:var(--accent);font-weight:600}
+    * { box-sizing: border-box; }
+    html, body {
+      height: 100%;
+      margin: 0;
+      font-family: var(--font-family);
+      background: var(--bg-gradient);
+      color: var(--text-color);
+    }
 
-/* ==== NAV ==== */
-#nav-menu{display:flex;gap:8px;justify-content:center;padding:12px 18px}
-.nav-item{background:rgba(255,255,255,0.12);padding:8px 12px;border-radius:8px;color:white;cursor:pointer}
+    #topbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 12px 20px;
+      background: var(--accent);
+      color: white;
+    }
 
-/* ==== LAYOUT ==== */
-#main-area{display:flex;gap:18px;padding:20px;align-items:flex-start}
-#employee-list{display:flex;flex-wrap:wrap;gap:18px;justify-content:center;flex:1}
-.employee-card{width:220px;padding:16px;border-radius:var(--card-radius);background:var(--card-bg);box-shadow:var(--card-shadow);cursor:pointer;text-align:center;transition:transform .18s ease}
-.employee-card:hover{transform:scale(var(--hover-zoom))}
-.employee-name{font-weight:700}
-.employee-grade{color:#6b7280;margin-top:6px;font-size:0.9rem}
+    #site-title {
+      font-size: var(--title-size);
+      margin: 0;
+    }
 
-/* DETAILS */
-#employee-details{width:360px;display:none;background:var(--card-bg);padding:18px;border-radius:12px;box-shadow:var(--card-shadow)}
-#employee-details h2{margin-top:0}
+    #top-actions button {
+      margin-left: 10px;
+      padding: 8px 12px;
+      border-radius: 8px;
+      border: none;
+      background: white;
+      color: var(--accent);
+      cursor: pointer;
+      font-weight: 600;
+    }
 
-/* ==== CANVAS LAYER (shapes / widgets) ==== */
-#canvas-layer{position:fixed;left:0;top:0;width:100%;height:100%;pointer-events:none;z-index:50}
-.canvas-item{position:absolute;pointer-events:auto;user-select:none}
+    #nav-menu {
+      display: flex;
+      gap: 8px;
+      justify-content: center;
+      margin: 15px 0;
+    }
 
-/* ==== CUSTOM PANEL ==== */
-#custom-panel{
-  position:fixed;right:0;top:0;width:420px;height:100%;background:#fff;box-shadow:-8px 0 30px rgba(0,0,0,0.12);
-  transform:translateX(100%);transition:transform .28s;z-index:120;overflow:auto;padding:14px;
-}
-#custom-panel.open{transform:translateX(0)}
-#custom-panel h3{margin:8px 0}
-.tab-row{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:8px}
-.tab-btn{padding:8px 10px;border-radius:8px;background:#f1f3f6;border:none;cursor:pointer}
-.tab-btn.active{background:var(--accent);color:#fff}
+    .nav-item {
+      padding: 8px 14px;
+      border-radius: 8px;
+      background: var(--accent);
+      color: white;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+    .nav-item:hover { background: #4157a3; }
 
-/* controls */
-.control-row{display:flex;gap:8px;align-items:center;margin:8px 0}
-.control-row label{width:40%}
-.control-row input[type="color"], .control-row input[type="range"], .control-row input[type="text"], .control-row select{flex:1;padding:6px;border-radius:6px;border:1px solid #ddd}
+    #main-area {
+      display: flex;
+      gap: 20px;
+      padding: 0 20px;
+    }
 
-/* small */
-@media(max-width:900px){
-  #main-area{flex-direction:column;padding:12px}
-  #employee-details{width:100%}
-}
-</style>
+    #employee-list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 18px;
+      justify-content: center;
+      flex: 1;
+    }
+
+    .employee-card {
+      background: var(--card-bg);
+      border-radius: var(--card-radius);
+      padding: 18px;
+      width: 220px;
+      box-shadow: var(--card-shadow);
+      cursor: pointer;
+      transition: transform 180ms ease, box-shadow 180ms;
+      text-align: center;
+    }
+    .employee-card:hover {
+      transform: scale(var(--card-hover-zoom));
+    }
+    .employee-name {
+      font-weight: 700;
+      margin-bottom: 5px;
+    }
+    .employee-grade {
+      color: #6b7280;
+      font-size: 0.9rem;
+    }
+
+    #employee-details {
+      flex-basis: 360px;
+      display: none;
+      background: var(--card-bg);
+      padding: 20px;
+      border-radius: 12px;
+      box-shadow: var(--card-shadow);
+    }
+
+    #employee-details h2 {
+      margin-top: 0;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 10px;
+    }
+
+    td {
+      padding: 8px;
+      border-bottom: 1px solid #eee;
+    }
+
+    td:first-child {
+      font-weight: bold;
+      color: var(--accent);
+      width: 40%;
+    }
+
+    .nav-btns {
+      margin-top: 15px;
+      display: flex;
+      justify-content: space-between;
+    }
+
+    button.nav {
+      background: var(--accent);
+      color: white;
+      padding: 8px 14px;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+
+    button.nav:hover {
+      background: #4157a3;
+    }
+
+    /* Admin customization panel */
+    #custom-panel {
+      position: fixed;
+      top: 0;
+      right: 0;
+      width: 420px;
+      height: 100%;
+      background: #fff;
+      box-shadow: -8px 0 30px rgba(0,0,0,0.12);
+      transform: translateX(100%);
+      transition: transform 300ms;
+      overflow: auto;
+      padding: 14px;
+      z-index: 100;
+    }
+    #custom-panel.open { transform: translateX(0); }
+
+    #canvas-layer {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      pointer-events: none;
+      z-index: 30;
+    }
+
+    .canvas-item {
+      position: absolute;
+      pointer-events: auto;
+    }
+
+    @media (max-width: 900px) {
+      #main-area { flex-direction: column; }
+      #employee-details { order: 3; width: 100%; }
+    }
+  </style>
 </head>
 <body>
-
-<!-- TOPBAR -->
-<div id="topbar">
-  <div id="site-title">🎓 Fiches Employés</div>
-  <div class="top-actions">
-    <button id="open-custom-btn" title="Mode personnalisation">🎨 Personnaliser</button>
-    <button id="export-config-btn" title="Exporter config">⬇ Export</button>
-    <button id="import-config-btn" title="Importer config">⬆ Import</button>
-    <input type="file" id="import-file" accept=".json" style="display:none">
+  <div id="topbar">
+    <h1 id="site-title">🎓 Fiches Employés</h1>
+    <div id="top-actions">
+      <button id="open-custom-btn">🎨 Personnaliser</button>
+      <button id="export-config-btn">⬇ Export</button>
+      <button id="import-config-btn">⬆ Import</button>
+      <input type="file" id="import-file" style="display:none">
+    </div>
   </div>
-</div>
 
-<!-- NAV -->
-<div id="nav-menu" aria-label="Navigation catégories"></div>
+  <div id="nav-menu"></div>
 
-<!-- MAIN -->
-<div id="main-area">
-  <div id="employee-list" aria-live="polite"></div>
-  <div id="employee-details" aria-hidden="true"></div>
-</div>
+  <div id="main-area">
+    <div id="employee-list"></div>
+    <div id="employee-details"></div>
+  </div>
 
-<!-- Canvas for shapes/widgets -->
-<div id="canvas-layer" aria-hidden="true"></div>
+  <div id="canvas-layer"></div>
 
-<!-- ADMIN PANEL -->
-<aside id="custom-panel" aria-hidden="true">
-  <h2>Mode Customisation (admin)</h2>
-
-  <p>Mot de passe admin</p>
-  <div style="display:flex;gap:8px;">
-    <input id="admin-password-input" type="password" placeholder="Mot de passe">
+  <!-- === Panneau de personnalisation === -->
+  <div id="custom-panel">
+    <h2>Mode Admin</h2>
+    <p>Mot de passe admin</p>
+    <input type="password" id="admin-password-input" placeholder="admin123">
     <button id="admin-login-btn">Se connecter</button>
-    <button id="admin-logout-btn" style="display:none">Se déconnecter</button>
-  </div>
-  <p id="auth-msg" style="color:#b00;margin-top:6px;"></p>
+    <button id="admin-logout-btn" style="display:none;">Se déconnecter</button>
+    <p id="auth-msg"></p>
 
-  <div style="margin-top:12px" id="admin-controls" aria-hidden="true">
-    <div class="tab-row">
-      <button class="tab-btn active" data-tab="appearance">Apparence</button>
-      <button class="tab-btn" data-tab="animations">Animations</button>
-      <button class="tab-btn" data-tab="shapes">Formes</button>
-      <button class="tab-btn" data-tab="text">Texte & Widgets</button>
-      <button class="tab-btn" data-tab="save">Sauvegarder</button>
-    </div>
-
-    <div id="tab-appearance" class="tab" style="display:block">
-      <h3>Apparence</h3>
-      <div class="control-row"><label>Fond (CSS)</label><input id="bg-input" type="text" placeholder="ex: linear-gradient(180deg,#f5f7fb,#e9eefb)"></div>
-      <div class="control-row"><label>Couleur carte</label><input id="card-color" type="color" value="#ffffff"></div>
-      <div class="control-row"><label>Accent</label><input id="accent-color" type="color" value="#2b3a67"></div>
-      <div class="control-row"><label>Police</label>
-        <select id="font-select">
-          <option value='"Segoe UI", Roboto, Arial, sans-serif'>Default</option>
-          <option value='Georgia, serif'>Georgia</option>
-          <option value='"Poppins", "Segoe UI", sans-serif'>Poppins</option>
-          <option value='"Montserrat", "Segoe UI", sans-serif'>Montserrat</option>
-        </select>
-      </div>
-      <div class="control-row"><label>Taille titre</label><input id="title-size" type="range" min="18" max="40" value="28"></div>
-      <div class="control-row"><label>Rayon cartes</label><input id="card-radius" type="range" min="0" max="40" value="14"></div>
-      <div class="control-row"><label>Ombre (opacité)</label><input id="shadow-opacity" type="range" min="0" max="100" value="6"></div>
-      <div style="margin-top:8px"><button id="apply-appearance" class="tab-btn">Appliquer</button></div>
-    </div>
-
-    <div id="tab-animations" class="tab" style="display:none">
-      <h3>Animations</h3>
-      <div class="control-row"><label>Zoom hover (%)</label><input id="hover-zoom" type="range" min="100" max="120" value="103"></div>
-      <div class="control-row"><label>Fade durée (ms)</label><input id="fade-duration" type="range" min="100" max="1500" value="400"></div>
-      <div class="control-row"><label>Parallax</label>
-        <select id="parallax-enable"><option value="no">Non</option><option value="yes">Oui</option></select>
-      </div>
-      <div style="margin-top:8px"><button id="apply-animations" class="tab-btn">Appliquer</button></div>
-    </div>
-
-    <div id="tab-shapes" class="tab" style="display:none">
-      <h3>Formes & décor</h3>
-      <div class="control-row"><label>Type</label>
-        <select id="shape-type"><option value="circle">Cercle</option><option value="square">Carré</option><option value="triangle">Triangle</option><option value="blob">Blob</option></select>
-      </div>
-      <div class="control-row"><label>Couleur</label><input id="shape-color" type="color" value="#ffd166"></div>
-      <div class="control-row"><label>Opacité</label><input id="shape-opacity" type="range" min="0" max="100" value="85"></div>
-      <div class="control-row"><label>Taille</label><input id="shape-size" type="range" min="30" max="600" value="120"></div>
-      <div style="margin-top:8px"><button id="add-shape-btn" class="tab-btn">Ajouter forme</button> <button id="clear-shapes-btn" class="tab-btn">Supprimer tout</button></div>
-      <p style="font-size:12px;color:#444;margin-top:8px">Double-clic pour supprimer une forme, clique & déplace pour la bouger.</p>
-    </div>
-
-    <div id="tab-text" class="tab" style="display:none">
-      <h3>Texte & Widgets</h3>
-      <div class="control-row"><label>Ajouter texte</label><input id="add-title-text" type="text" placeholder="Nouveau titre..."></div>
-      <div class="control-row"><label>Couleur</label><input id="title-color" type="color" value="#1c2951"></div>
-      <div class="control-row"><label>Taille</label><input id="title-size-range" type="range" min="12" max="60" value="28"></div>
-      <div style="margin-top:8px"><button id="add-title-btn" class="tab-btn">Ajouter texte</button></div>
-      <hr>
-      <h4>Widget</h4>
-      <div class="control-row"><label>Type</label><select id="widget-type"><option value="button">Bouton</option><option value="modal">Modal</option><option value="link">Lien</option></select></div>
-      <div class="control-row"><label>Libellé</label><input id="widget-label" type="text" placeholder="Ex: Contact"></div>
-      <div class="control-row"><label>Action / URL</label><input id="widget-action" type="text" placeholder="https://... ou texte pour modal"></div>
-      <div style="margin-top:8px"><button id="add-widget-btn" class="tab-btn">Ajouter widget</button></div>
-    </div>
-
-    <div id="tab-save" class="tab" style="display:none">
-      <h3>Sauvegarde / Export</h3>
-      <div style="display:flex;gap:8px">
-        <button id="export-json" class="tab-btn">Copier config (JSON)</button>
-        <button id="apply-config" class="tab-btn">Appliquer JSON</button>
-        <button id="reset-config" class="tab-btn">Réinitialiser</button>
-      </div>
-      <p style="font-size:12px;color:#555;margin-top:8px">Exporter → coller le JSON dans un fichier <code>config.json</code> dans ton repo pour persistance.</p>
-    </div>
+    <div id="tab-contents"></div>
+    <button id="close-custom-panel">Fermer</button>
   </div>
 
-  <div style="margin-top:12px">
-    <button id="close-custom-panel" class="tab-btn">Fermer</button>
-  </div>
-</aside>
+  <script>
+    const SHEET_ID = "17ZntDHZ8olidnCM1pig311AcjawM4l6HoRxSYFP7KGw";
+    const API_KEY = "AIzaSyBtOfa8W5POpJ2KOZSKqxsC4CfZBkYG40E";
+    const SHEET_NAME = "Info Employé";
 
-<script>
-/* ================= APP (Google Sheets + affichage) ================= */
-const SHEET_ID = "17ZntDHZ8olidnCM1pig311AcjawM4l6HoRxSYFP7KGw";
-const API_KEY  = "AIzaSyBtOfa8W5POpJ2KOZSKqxsC4CfZBkYG40E";
-const SHEET_NAME = "Info Employé";
+    let allEmployees = [];
+    let currentList = [];
 
-let allEmployeesGlobal = [];
-let currentContext = [];
-let currentIndex = 0;
+    async function loadEmployees() {
+      const url = `https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}/values/${encodeURIComponent(SHEET_NAME)}?key=${API_KEY}`;
+      const res = await fetch(url);
+      const data = await res.json();
+      if (!data.values) return;
 
-async function loadEmployeesFromSheet(){
-  try {
-    const url = `https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}/values/${encodeURIComponent(SHEET_NAME)}?key=${API_KEY}`;
-    const res = await fetch(url);
-    const data = await res.json();
-    if(!data.values || data.values.length===0){
-      document.getElementById('employee-list').innerHTML = '<p>Aucune donnée trouvée.</p>';
-      return;
+      const rows = data.values.filter(r => r.some(c => (c || "").trim() !== ""));
+      const hasHeader = rows[0].some(v => /[A-Za-zÀ-ÖØ-öø-ÿ]/.test(v));
+      const dataRows = hasHeader ? rows.slice(1) : rows;
+
+      allEmployees = dataRows.map(row => ({
+        id: row[1] || "",
+        nom: row[2] || "",
+        rib: row[3] || "",
+        grade: row[4] || "",
+        tel: row[5] || "",
+        discord: row[6] || "",
+        gmail: row[8] || "",
+        diplome: row[9] || "",
+        entree: row[10] || "",
+        sortie: row[11] || "",
+        sanction: row[12] || "",
+        retrait: row[13] || ""
+      })).filter(e => e.nom && e.grade);
+
+      currentList = [...allEmployees];
+      renderNav();
+      renderList();
     }
-    const rows = data.values.filter(r => r.some(cell => String(cell||'').trim() !== ''));
-    const firstRowIsHeader = rows[0].some(v => /[A-Za-zÀ-ÖØ-öø-ÿ]/.test(String(v)));
-    const dataRows = firstRowIsHeader ? rows.slice(1) : rows;
-    const employees = dataRows.map(row=>({
-      id: row[1]||"",
-      nom: row[2]||"",
-      rib: row[3]||"",
-      grade: row[4]||"",
-      tel: row[5]||"",
-      discord: row[6]||"",
-      gmail: row[8]||"",
-      diplome: row[9]||"",
-      entree: row[10]||"",
-      sortie: row[11]||"",
-      sanction: row[12]||"",
-      retrait: row[13]||""
-    })).filter(e=>e.nom && e.grade);
-    allEmployeesGlobal = employees;
-    currentContext = employees.slice();
-    renderNavDefault();
-    renderEmployeeList(currentContext);
-  } catch(err){
-    console.error(err);
-    document.getElementById('employee-list').innerHTML = '<p>Erreur de chargement.</p>';
-  }
-}
 
-function renderNavDefault(){
-  const nav = document.getElementById('nav-menu');
-  nav.innerHTML = '';
-  const allBtn = document.createElement('div');
-  allBtn.className = 'nav-item';
-  allBtn.textContent = 'Tous';
-  allBtn.addEventListener('click', ()=> { currentContext = allEmployeesGlobal.slice(); renderEmployeeList(currentContext); });
-  nav.appendChild(allBtn);
-  const grades = Array.from(new Set(allEmployeesGlobal.map(e=>e.grade))).filter(Boolean);
-  grades.forEach(g=>{
-    const b = document.createElement('div');
-    b.className = 'nav-item';
-    b.textContent = g;
-    b.addEventListener('click', ()=> { currentContext = allEmployeesGlobal.filter(x=>x.grade===g); renderEmployeeList(currentContext); });
-    nav.appendChild(b);
-  });
-}
+    function renderNav() {
+      const nav = document.getElementById("nav-menu");
+      nav.innerHTML = "";
+      const allBtn = document.createElement("div");
+      allBtn.className = "nav-item";
+      allBtn.textContent = "Tous";
+      allBtn.onclick = () => {
+        currentList = [...allEmployees];
+        renderList();
+      };
+      nav.appendChild(allBtn);
 
-function renderEmployeeList(list){
-  const wrap = document.getElementById('employee-list');
-  wrap.innerHTML = '';
-  document.getElementById('employee-details').style.display = 'none';
-  wrap.style.display = 'flex';
-  list.forEach((emp,i)=>{
-    const card = document.createElement('div');
-    card.className = 'employee-card';
-    card.innerHTML = `<div class="employee-name">${emp.nom}</div><div class="employee-grade">${emp.grade}</div>`;
-    card.addEventListener('click', ()=> showEmployeeDetails(emp, list, i));
-    wrap.appendChild(card);
-  });
-}
+      const grades = [...new Set(allEmployees.map(e => e.grade))];
+      grades.forEach(g => {
+        const btn = document.createElement("div");
+        btn.className = "nav-item";
+        btn.textContent = g;
+        btn.onclick = () => {
+          currentList = allEmployees.filter(e => e.grade === g);
+          renderList();
+        };
+        nav.appendChild(btn);
+      });
+    }
 
-function showEmployeeDetails(emp, listContext, idx){
-  currentContext = listContext || currentContext;
-  currentIndex = idx;
-  document.getElementById('employee-list').style.display = 'none';
-  const d = document.getElementById('employee-details');
-  d.style.display = 'block';
-  d.innerHTML = `
-    <h2>👤 ${emp.nom}</h2>
-    <table>
-      <tr><td>ID Unique</td><td>${emp.id}</td></tr>
-      <tr><td>RIB</td><td>${emp.rib}</td></tr>
-      <tr><td>Grade</td><td>${emp.grade}</td></tr>
-      <tr><td>Téléphone</td><td>${emp.tel}</td></tr>
-      <tr><td>ID Discord</td><td>${emp.discord}</td></tr>
-      <tr><td>Permis Gmail</td><td>${emp.gmail}</td></tr>
-      <tr><td>🎓 Diplôme</td><td>${emp.diplome}</td></tr>
-      <tr><td>Date entrée</td><td>${emp.entree}</td></tr>
-      <tr><td>Date sortie</td><td>${emp.sortie}</td></tr>
-      <tr><td>Avertissement</td><td>${emp.sanction}</td></tr>
-      <tr><td>Date retrait</td><td>${emp.retrait}</td></tr>
-    </table>
-    <div style="display:flex;gap:8px;margin-top:12px;justify-content:space-between">
-      <button class="nav" id="prev-btn">← Précédent</button>
-      <button class="nav" id="next-btn">Suivant →</button>
-      <button class="nav" id="back-btn">Retour</button>
-    </div>
-  `;
-  document.getElementById('prev-btn').addEventListener('click', ()=> {
-    if(currentIndex>0) showEmployeeDetails(currentContext[currentIndex-1], currentContext, currentIndex-1);
-  });
-  document.getElementById('next-btn').addEventListener('click', ()=> {
-    if(currentIndex < currentContext.length-1) showEmployeeDetails(currentContext[currentIndex+1], currentContext, currentIndex+1);
-  });
-  document.getElementById('back-btn').addEventListener('click', ()=> {
-    document.getElementById('employee-details').style.display = 'none';
-    document.getElementById('employee-list').style.display = 'flex';
-  });
-}
+    function renderList() {
+      const list = document.getElementById("employee-list");
+      const details = document.getElementById("employee-details");
+      details.style.display = "none";
+      list.style.display = "flex";
+      list.innerHTML = currentList.map(emp => `
+        <div class="employee-card" onclick="showDetails('${emp.nom.replace(/'/g,"\\'")}')">
+          <div class="employee-name">${emp.nom}</div>
+          <div class="employee-grade">${emp.grade}</div>
+        </div>
+      `).join("");
+    }
 
-/* ================= CUSTOMIZER (admin only) ================= */
-const ADMIN_PASSWORD = "admin123";
-let isAdmin = false;
-let currentConfig = {};
-const panel = document.getElementById('custom-panel');
-const openBtn = document.getElementById('open-custom-btn');
-const closeBtn = document.getElementById('close-custom-panel');
-const loginBtn = document.getElementById('admin-login-btn');
-const logoutBtn = document.getElementById('admin-logout-btn');
-const passInput = document.getElementById('admin-password-input');
-const authMsg = document.getElementById('auth-msg');
-const canvas = document.getElementById('canvas-layer');
+    function showDetails(nom) {
+      const emp = allEmployees.find(e => e.nom === nom);
+      const details = document.getElementById("employee-details");
+      const list = document.getElementById("employee-list");
+      list.style.display = "none";
+      details.style.display = "block";
+      details.innerHTML = `
+        <h2>👤 ${emp.nom}</h2>
+        <table>
+          <tr><td>ID Unique</td><td>${emp.id}</td></tr>
+          <tr><td>RIB</td><td>${emp.rib}</td></tr>
+          <tr><td>Grade</td><td>${emp.grade}</td></tr>
+          <tr><td>Téléphone</td><td>${emp.tel}</td></tr>
+          <tr><td>ID Discord</td><td>${emp.discord}</td></tr>
+          <tr><td>Permis Gmail</td><td>${emp.gmail}</td></tr>
+          <tr><td>🎓 Diplôme</td><td>${emp.diplome}</td></tr>
+          <tr><td>Date d'entrée</td><td>${emp.entree}</td></tr>
+          <tr><td>Date de sortie</td><td>${emp.sortie}</td></tr>
+          <tr><td>Avertissement</td><td>${emp.sanction}</td></tr>
+          <tr><td>Date retrait</td><td>${emp.retrait}</td></tr>
+        </table>
+        <div class="nav-btns">
+          <button class="nav" onclick="renderList()">← Retour</button>
+        </div>
+      `;
+    }
 
-openBtn.addEventListener('click', ()=> panel.classList.add('open'));
-closeBtn.addEventListener('click', ()=> panel.classList.remove('open'));
-
-// tab switching
-document.querySelectorAll('.tab-btn').forEach(btn=>{
-  btn.addEventListener('click', ()=> {
-    document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
-    btn.classList.add('active');
-    const tab = btn.dataset.tab;
-    document.querySelectorAll('#custom-panel .tab').forEach(t=> t.style.display = 'none');
-    document.getElementById('tab-'+tab).style.display = 'block';
-  });
-});
-
-loginBtn.addEventListener('click', ()=> {
-  if(passInput.value === ADMIN_PASSWORD){
-    isAdmin = true;
-    authMsg.textContent = 'Connecté en admin';
-    loginBtn.style.display = 'none';
-    logoutBtn.style.display = 'inline-block';
-    passInput.style.display = 'none';
-    document.getElementById('admin-controls').setAttribute('aria-hidden','false');
-    initCustomizerControls();
-  } else {
-    authMsg.textContent = 'Mot de passe incorrect';
-  }
-});
-
-logoutBtn.addEventListener('click', ()=> {
-  isAdmin = false;
-  authMsg.textContent = 'Déconnecté';
-  loginBtn.style.display = 'inline-block';
-  logoutBtn.style.display = 'none';
-  passInput.style.display = 'inline-block';
-  document.getElementById('admin-controls').setAttribute('aria-hidden','true');
-});
-
-/* Initialize controls only after login */
-function initCustomizerControls(){
-  // appearance
-  document.getElementById('apply-appearance').addEventListener('click', applyAppearance);
-  // animations
-  document.getElementById('apply-animations').addEventListener('click', applyAnimations);
-  // shapes
-  document.getElementById('add-shape-btn').addEventListener('click', addShape);
-  document.getElementById('clear-shapes-btn').addEventListener('click', clearShapes);
-  // text / widgets
-  document.getElementById('add-title-btn').addEventListener('click', addTitleElement);
-  document.getElementById('add-widget-btn').addEventListener('click', addWidget);
-  // save / export
-  document.getElementById('export-json').addEventListener('click', exportConfigJSON);
-  document.getElementById('apply-config').addEventListener('click', ()=> {
-    const json = prompt('Colle ici le JSON de config');
-    if(!json) return;
-    try { importConfigJSON(JSON.parse(json)); alert('Config appliquée'); } catch(e){ alert('JSON invalide'); }
-  });
-  document.getElementById('reset-config').addEventListener('click', resetConfig);
-
-  // top import/export
-  document.getElementById('export-config-btn').addEventListener('click', exportConfigJSON);
-  document.getElementById('import-config-btn').addEventListener('click', ()=> document.getElementById('import-file').click());
-  document.getElementById('import-file').addEventListener('change', (e)=>{
-    const f = e.target.files[0]; if(!f) return;
-    const r = new FileReader(); r.onload = ()=> {
-      try { importConfigJSON(JSON.parse(r.result)); alert('Config importée'); } catch(err){ alert('JSON invalide'); }
-    }; r.readAsText(f);
-  });
-}
-
-/* UTIL helpers */
-function setCSSVar(name,val){ document.documentElement.style.setProperty(name,val); }
-function getCurrentCSSVars(){
-  const s = getComputedStyle(document.documentElement);
-  return {
-    bg: s.getPropertyValue('--bg-gradient'),
-    accent: s.getPropertyValue('--accent'),
-    card: s.getPropertyValue('--card-bg'),
-    radius: s.getPropertyValue('--card-radius'),
-    shadow: s.getPropertyValue('--card-shadow'),
-    font: s.getPropertyValue('--font'),
-    hover: s.getPropertyValue('--hover-zoom')
-  };
-}
-
-/* APPLY appearance */
-function applyAppearance(){
-  const bg = document.getElementById('bg-input').value.trim();
-  if(bg) document.documentElement.style.setProperty('--bg-gradient', bg);
-  const card = document.getElementById('card-color').value;
-  document.documentElement.style.setProperty('--card-bg', card);
-  const accent = document.getElementById('accent-color').value;
-  document.documentElement.style.setProperty('--accent', accent);
-  const font = document.getElementById('font-select').value;
-  document.documentElement.style.setProperty('--font', font);
-  setCSSVar('--title-size', document.getElementById('title-size').value + 'px');
-  setCSSVar('--card-radius', document.getElementById('card-radius').value + 'px');
-  const shadowOp = Number(document.getElementById('shadow-opacity').value)/100;
-  setCSSVar('--card-shadow', `0 10px 30px rgba(31,41,55,${shadowOp})`);
-  currentConfig.appearance = { bg, card, accent, font };
-}
-
-/* APPLY animations */
-let parallaxHandler = null;
-function applyAnimations(){
-  const zoom = Number(document.getElementById('hover-zoom').value)/100;
-  setCSSVar('--hover-zoom', zoom);
-  setCSSVar('--fade-duration', document.getElementById('fade-duration').value + 'ms');
-  const parallax = document.getElementById('parallax-enable').value === 'yes';
-  if(parallax) enableParallax(); else disableParallax();
-  currentConfig.animations = { zoom, parallax };
-}
-function enableParallax(){
-  if(parallaxHandler) return;
-  parallaxHandler = (e)=> {
-    const x = e.clientX / window.innerWidth;
-    const y = e.clientY / window.innerHeight;
-    document.body.style.backgroundPosition = `${50 + (x-0.5)*10}% ${50 + (y-0.5)*6}%`;
-  };
-  window.addEventListener('mousemove', parallaxHandler);
-}
-function disableParallax(){
-  if(!parallaxHandler) return;
-  window.removeEventListener('mousemove', parallaxHandler);
-  parallaxHandler = null;
-  document.body.style.backgroundPosition = '';
-}
-
-/* SHAPES & DRAG */
-let shapeCounter = 0;
-function addShape(){
-  if(!isAdmin) return alert('Authentification requise');
-  const type = document.getElementById('shape-type').value;
-  const color = document.getElementById('shape-color').value;
-  const size = Number(document.getElementById('shape-size').value);
-  const opacity = Number(document.getElementById('shape-opacity').value)/100;
-  const el = document.createElement('div');
-  el.className = 'canvas-item';
-  el.dataset.shapeId = 's'+(++shapeCounter);
-  el.style.left = (20 + Math.random()*300) + 'px';
-  el.style.top = (20 + Math.random()*200) + 'px';
-  el.style.width = (type==='triangle'?0:size)+'px';
-  el.style.height = (type==='triangle'?0:size)+'px';
-  el.style.opacity = opacity;
-  el.style.zIndex = 80;
-  el.style.cursor = 'grab';
-  if(type==='circle'){ el.style.borderRadius = '50%'; el.style.background = color; }
-  else if(type==='square'){ el.style.background = color; }
-  else if(type==='blob'){ el.style.background = color; el.style.borderRadius = '30% 70% 60% 40% / 40% 35% 65% 60%'; }
-  else if(type==='triangle'){
-    el.style.width = '0'; el.style.height = '0';
-    el.style.borderLeft = `${size/2}px solid transparent`;
-    el.style.borderRight = `${size/2}px solid transparent`;
-    el.style.borderBottom = `${size}px solid ${color}`;
-  }
-  makeDraggable(el);
-  canvas.appendChild(el);
-  // store
-  if(!currentConfig.shapes) currentConfig.shapes = [];
-  currentConfig.shapes.push({id: el.dataset.shapeId, type, color, size, opacity, left: el.style.left, top: el.style.top});
-}
-
-function clearShapes(){
-  document.querySelectorAll('#canvas-layer .canvas-item').forEach(n=>n.remove());
-  currentConfig.shapes = [];
-}
-
-/* draggable helper (mouse) */
-function makeDraggable(el){
-  el.addEventListener('mousedown', onMouseDown);
-  el.addEventListener('touchstart', onTouchStart, {passive:false});
-  el.addEventListener('dblclick', ()=> { if(confirm('Supprimer cet élément ?')) el.remove(); });
-
-  let startX=0,startY=0,origLeft=0,origTop=0,dragging=false;
-  function onMouseDown(e){
-    dragging=true;
-    startX = e.clientX; startY = e.clientY;
-    origLeft = parseFloat(el.style.left) || 0;
-    origTop = parseFloat(el.style.top) || 0;
-    el.style.cursor='grabbing';
-    window.addEventListener('mousemove', onMouseMove);
-    window.addEventListener('mouseup', onMouseUp);
-    e.preventDefault();
-  }
-  function onMouseMove(e){
-    if(!dragging) return;
-    const dx = e.clientX - startX;
-    const dy = e.clientY - startY;
-    el.style.left = (origLeft + dx) + 'px';
-    el.style.top = (origTop + dy) + 'px';
-  }
-  function onMouseUp(){
-    dragging=false; el.style.cursor='grab';
-    window.removeEventListener('mousemove', onMouseMove);
-    window.removeEventListener('mouseup', onMouseUp);
-  }
-  function onTouchStart(e){
-    dragging=true;
-    const touch = e.touches[0];
-    startX = touch.clientX; startY = touch.clientY;
-    origLeft = parseFloat(el.style.left) || 0;
-    origTop = parseFloat(el.style.top) || 0;
-    window.addEventListener('touchmove', onTouchMove, {passive:false});
-    window.addEventListener('touchend', onTouchEnd);
-    e.preventDefault();
-  }
-  function onTouchMove(e){
-    if(!dragging) return;
-    const touch = e.touches[0];
-    const dx = touch.clientX - startX;
-    const dy = touch.clientY - startY;
-    el.style.left = (origLeft + dx) + 'px';
-    el.style.top = (origTop + dy) + 'px';
-  }
-  function onTouchEnd(){
-    dragging=false;
-    window.removeEventListener('touchmove', onTouchMove);
-    window.removeEventListener('touchend', onTouchEnd);
-  }
-}
-
-/* TEXT ELEMENTS */
-function addTitleElement(){
-  if(!isAdmin) return alert('Authentification requise');
-  const txt = (document.getElementById('add-title-text').value || 'Titre').trim();
-  const color = document.getElementById('title-color').value;
-  const size = document.getElementById('title-size-range').value + 'px';
-  const el = document.createElement('div');
-  el.className = 'canvas-item';
-  el.textContent = txt;
-  el.style.left = '30px';
-  el.style.top = '30px';
-  el.style.fontSize = size; el.style.color = color; el.style.fontWeight = '700'; el.style.zIndex = 90;
-  makeDraggable(el);
-  canvas.appendChild(el);
-  if(!currentConfig.texts) currentConfig.texts = [];
-  currentConfig.texts.push({text:txt,color,size,left:el.style.left,top:el.style.top});
-}
-
-/* WIDGETS */
-function addWidget(){
-  if(!isAdmin) return alert('Authentification requise');
-  const type = document.getElementById('widget-type').value;
-  const label = (document.getElementById('widget-label').value || 'Widget').trim();
-  const action = (document.getElementById('widget-action').value || '').trim();
-  const el = document.createElement('button');
-  el.className = 'canvas-item';
-  el.textContent = label;
-  el.style.left = '60px'; el.style.top = '120px'; el.style.padding = '8px 12px';
-  el.style.borderRadius = '8px'; el.style.background = 'var(--accent)'; el.style.color = '#fff'; el.style.zIndex = 95;
-  if(type==='link') el.addEventListener('click', ()=> action && window.open(action,'_blank'));
-  else if(type==='modal') el.addEventListener('click', ()=> alert(action || 'Modal'));
-  else el.addEventListener('click', ()=> alert(action || 'Action'));
-  makeDraggable(el);
-  canvas.appendChild(el);
-  if(!currentConfig.widgets) currentConfig.widgets = [];
-  currentConfig.widgets.push({type,label,action,left:el.style.left,top:el.style.top});
-}
-
-/* EXPORT / IMPORT */
-function exportConfigJSON(){
-  // gather items positions and css vars
-  const items = [];
-  document.querySelectorAll('#canvas-layer .canvas-item').forEach(el=>{
-    items.push({html:el.outerHTML,left:el.style.left,top:el.style.top});
-  });
-  currentConfig.runtime = { items, cssVars: getCurrentCSSVars() };
-  const json = JSON.stringify(currentConfig,null,2);
-  navigator.clipboard.writeText(json).then(()=> alert('Configuration copiée dans le presse-papier.'));
-}
-
-function importConfigJSON(json){
-  if(json.appearance){
-    if(json.appearance.bg) document.documentElement.style.setProperty('--bg-gradient', json.appearance.bg);
-    if(json.appearance.card) document.documentElement.style.setProperty('--card-bg', json.appearance.card);
-    if(json.appearance.accent) document.documentElement.style.setProperty('--accent', json.appearance.accent);
-    if(json.appearance.font) document.documentElement.style.setProperty('--font', json.appearance.font);
-  }
-  if(json.animations){
-    if(json.animations.zoom) setCSSVar('--hover-zoom', json.animations.zoom);
-    if(json.animations.parallax) { if(json.animations.parallax) enableParallax(); else disableParallax(); }
-  }
-  // clear existing
-  document.querySelectorAll('#canvas-layer .canvas-item').forEach(n=>n.remove());
-  if(json.shapes) json.shapes.forEach(s=>{
-    // recreate shape
-    const el = document.createElement('div'); el.className='canvas-item';
-    el.style.left = s.left || '20px'; el.style.top = s.top || '20px';
-    el.style.zIndex = 80;
-    const type = s.type;
-    const color = s.color; const size = s.size || 120; const opacity = s.opacity || 0.85;
-    el.style.opacity = opacity;
-    if(type==='circle'){ el.style.width = size+'px'; el.style.height=size+'px'; el.style.borderRadius='50%'; el.style.background=color; }
-    else if(type==='square'){ el.style.width=size+'px'; el.style.height=size+'px'; el.style.background=color; }
-    else if(type==='blob'){ el.style.width=size+'px'; el.style.height=size+'px'; el.style.background=color; el.style.borderRadius='30% 70% 60% 40% / 40% 35% 65% 60%'; }
-    else if(type==='triangle'){ el.style.width='0'; el.style.height='0'; el.style.borderLeft = `${size/2}px solid transparent`; el.style.borderRight = `${size/2}px solid transparent`; el.style.borderBottom = `${size}px solid ${color}`; }
-    makeDraggable(el); canvas.appendChild(el);
-  });
-  if(json.texts) json.texts.forEach(t=>{
-    const el = document.createElement('div'); el.className='canvas-item'; el.textContent = t.text;
-    el.style.left = t.left || '20px'; el.style.top = t.top || '20px'; el.style.color = t.color || '#000'; el.style.fontSize = t.size || '28px';
-    makeDraggable(el); canvas.appendChild(el);
-  });
-  if(json.widgets) json.widgets.forEach(w=>{
-    const el = document.createElement('button'); el.className='canvas-item'; el.textContent = w.label || 'Widget';
-    el.style.left = w.left || '50px'; el.style.top = w.top || '50px'; el.style.padding='8px 10px'; el.style.borderRadius='8px'; el.style.background='var(--accent)'; el.style.color='#fff';
-    if(w.type==='link') el.addEventListener('click', ()=> window.open(w.action,'_blank')); else el.addEventListener('click', ()=> alert(w.action||'Widget'));
-    makeDraggable(el); canvas.appendChild(el);
-  });
-  currentConfig = json;
-}
-
-function resetConfig(){
-  if(!confirm('Réinitialiser la configuration ?')) return;
-  currentConfig = {};
-  document.querySelectorAll('#canvas-layer .canvas-item').forEach(n=>n.remove());
-  // reset CSS vars to defaults (simple)
-  document.documentElement.style.removeProperty('--bg-gradient');
-  document.documentElement.style.removeProperty('--card-bg');
-  document.documentElement.style.removeProperty('--accent');
-  document.documentElement.style.removeProperty('--font');
-  document.documentElement.style.removeProperty('--title-size');
-  document.documentElement.style.removeProperty('--card-radius');
-  document.documentElement.style.removeProperty('--card-shadow');
-  alert('Réinitialisé');
-}
-
-/* init on load */
-document.addEventListener('DOMContentLoaded', ()=>{
-  loadEmployeesFromSheet();
-  // small UX: close panel when clicking outside
-  document.addEventListener('click', (e)=> {
-    if(!panel.classList.contains('open')) return;
-    const within = panel.contains(e.target) || openBtn.contains(e.target);
-    if(!within) panel.classList.remove('open');
-  });
-});
-</script>
-
+    document.addEventListener("DOMContentLoaded", loadEmployees);
+  </script>
 </body>
 </html>
