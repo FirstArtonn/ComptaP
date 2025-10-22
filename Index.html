@@ -234,7 +234,7 @@ function openDiplomePopup(url){
   popup.innerHTML=`<div class="popup-content">
     <span class="popup-close" onclick="this.parentElement.parentElement.remove()">✖</span>
     <iframe src="${url.replace('/view','/preview')}" frameborder="0" allowfullscreen></iframe>
-  </div>`;
+  </div>`
   document.body.appendChild(popup);
 }
 
@@ -248,11 +248,14 @@ async function updateGrade(empId, nouveauGrade){
       body: JSON.stringify({id:empId, grade:nouveauGrade})
     });
     const data = await res.json();
-    if(data.success){
-      alert(`✅ Le grade de l'employé a été mis à jour en "${nouveauGrade}"`);
-      const emp = filteredEmployees.find(e=>e.id===empId);
-      if(emp){ emp.grade=nouveauGrade; displayEmployeeList(filteredEmployees); }
-    } else { alert("❌ Erreur : "+(data.error||JSON.stringify(data))); }
+if(data.success){
+  alert("✅ Le grade a été mis à jour !");
+} else {
+  // Affiche l'objet complet de façon lisible
+  alert("❌ Erreur : " + (data.error || JSON.stringify(data)));
+  console.error("Détails de l'erreur :", data);
+}
+
   } catch(err){
     alert("⚠️ Erreur réseau : "+err.message);
     console.error(err);
