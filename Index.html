@@ -6,194 +6,81 @@
 <title>🎓 Fiches Employés</title>
 <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
 <style>
-body {
-  margin: 0;
-  padding: 0;
-  font-family: 'Roboto', sans-serif;
-  background: #f5f7fb;
-  color: #2b3a67;
-  transition: background 0.5s, color 0.5s;
-}
+/* === Styles globaux === */
+body { margin:0; padding:0; font-family:'Roboto',sans-serif; background:#f5f7fb; color:#2b3a67; transition: background 0.5s, color 0.5s; }
+body.dark-mode { background:#1c1c2c; color:#f0f0f5; }
+body.dark-mode header { background: linear-gradient(135deg,#2c2c54,#3c3c8a); }
+body.dark-mode .nav-item { color:#ccc; }
+body.dark-mode .nav-item.active::after { background:#a6a6ff; }
+body.dark-mode input { background:#2a2a3b; color:#fff; border-color:#444; }
+body.dark-mode .employee-card { background:#2a2a3b; color:#f0f0f5; }
 
-/* Mode sombre */
-body.dark-mode {
-  background: #1c1c2c;
-  color: #f0f0f5;
-}
-body.dark-mode header {
-  background: linear-gradient(135deg,#2c2c54,#3c3c8a);
-}
-body.dark-mode .nav-item { color: #ccc; }
-body.dark-mode .nav-item.active::after { background: #a6a6ff; }
-body.dark-mode input {
-  background: #2a2a3b;
-  color: #fff;
-  border-color: #444;
-}
-body.dark-mode .employee-card { background: #2a2a3b; color: #f0f0f5; }
-
-/* HEADER */
-header {
-  background: linear-gradient(135deg,#667eea,#764ba2);
-  color: white;
-  padding: 30px 20px 10px;
-  text-align: center;
-  border-bottom-left-radius: 40px;
-  border-bottom-right-radius: 40px;
-  box-shadow: 0 8px 20px rgba(0,0,0,0.1);
-  position: relative;
-}
-header h1 { font-size: 2.5rem; margin: 0; }
-header p { margin-top: 8px; font-size: 1.05rem; color: #e0e0ff; }
+/* Header */
+header { background:linear-gradient(135deg,#667eea,#764ba2); color:white; padding:30px 20px 10px; text-align:center; border-bottom-left-radius:40px; border-bottom-right-radius:40px; box-shadow:0 8px 20px rgba(0,0,0,0.1); position:relative; }
+header h1 { font-size:2.5rem; margin:0; }
+header p { margin-top:8px; font-size:1.05rem; color:#e0e0ff; }
 
 /* Lune */
-#moon {
-  position: absolute;
-  top: 20px;
-  right: 25px;
-  font-size: 1.8rem;
-  cursor: pointer;
-  transition: transform 0.5s;
-}
-#moon.rotate { transform: rotate(360deg); }
+#moon { position:absolute; top:20px; right:25px; font-size:1.8rem; cursor:pointer; transition: transform 0.5s; }
+#moon.rotate { transform:rotate(360deg); }
 
-/* NAVIGATION */
-#main-nav {
-  display: flex;
-  justify-content: center;
-  gap: 50px;
-  margin-top: 20px;
-}
-.nav-item {
-  position: relative;
-  font-weight: 600;
-  font-size: 1.05rem;
-  color: #fff;
-  cursor: pointer;
-  padding: 8px 0;
-  transition: color 0.3s ease;
-}
-.nav-item:hover { color: #dcdcff; }
-.nav-item::after {
-  content: '';
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  width: 0%;
-  height: 3px;
-  background: #fff;
-  border-radius: 5px;
-  transition: width 0.3s ease;
-}
-.nav-item.active::after {
-  width: 100%;
-}
+/* Navigation */
+#main-nav { display:flex; justify-content:center; gap:50px; margin-top:20px; }
+.nav-item { position:relative; font-weight:600; font-size:1.05rem; color:#fff; cursor:pointer; padding:8px 0; transition:color 0.3s ease; }
+.nav-item:hover { color:#dcdcff; }
+.nav-item::after { content:''; position:absolute; bottom:0; left:0; width:0%; height:3px; background:#fff; border-radius:5px; transition:width 0.3s ease; }
+.nav-item.active::after { width:100%; }
 
-/* TABS */
-#tab-contents .tab {
-  display: none;
-  opacity: 0;
-  transform: translateY(20px);
-  transition: opacity 0.4s ease, transform 0.4s ease;
-}
-#tab-contents .tab.active {
-  display: block;
-  opacity: 1;
-  transform: translateY(0);
-}
+/* Tabs */
+#tab-contents .tab { display:none; opacity:0; transform:translateY(20px); transition:opacity 0.4s ease, transform 0.4s ease; }
+#tab-contents .tab.active { display:block; opacity:1; transform:translateY(0); }
 
-/* BARRE DE RECHERCHE */
-#search-container {
-  margin: 30px auto 10px;
-  text-align: center;
-}
-#search-bar {
-  padding: 10px 15px;
-  border-radius: 25px;
-  border: 2px solid #667eea;
-  width: 300px;
-  font-size: 1rem;
-  transition: all 0.3s ease;
-}
-#search-bar:focus {
-  outline: none;
-  border-color: #764ba2;
-  box-shadow: 0 0 10px rgba(118,75,162,0.4);
-}
+/* Barre de recherche */
+#search-container { margin:30px auto 10px; text-align:center; }
+#search-bar { padding:10px 15px; border-radius:25px; border:2px solid #667eea; width:300px; font-size:1rem; transition:all 0.3s ease; }
+#search-bar:focus { outline:none; border-color:#764ba2; box-shadow:0 0 10px rgba(118,75,162,0.4); }
 
-/* EMPLOYÉS */
-#employee-list {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  gap: 25px;
-  padding: 20px;
-}
-.employee-card {
-  background: #ffffff;
-  border-radius: 20px;
-  padding: 20px;
-  width: 220px;
-  text-align: center;
-  cursor: pointer;
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
-  box-shadow: 0 5px 15px rgba(0,0,0,0.07);
-  position: relative;
-}
-.employee-card:hover {
-  transform: translateY(-5px) scale(1.03);
-  box-shadow: 0 12px 25px rgba(0,0,0,0.12);
-}
-.employee-name { font-weight: 700; font-size: 1.2rem; margin-bottom: 5px; }
-.employee-grade { font-weight: 500; color: #787878; }
+/* Liste des employés */
+#employee-list { display:flex; flex-wrap:wrap; justify-content:center; gap:25px; padding:20px; }
+.employee-card { background:#ffffff; border-radius:20px; padding:20px; width:220px; text-align:center; cursor:pointer; transition:transform 0.3s ease, box-shadow 0.3s ease; box-shadow:0 5px 15px rgba(0,0,0,0.07); position:relative; }
+.employee-card:hover { transform:translateY(-5px) scale(1.03); box-shadow:0 12px 25px rgba(0,0,0,0.12); }
+.employee-name { font-weight:700; font-size:1.2rem; margin-bottom:5px; }
+.employee-grade { font-weight:500; color:#787878; }
 
-/* Anim sanctions */
-@keyframes pulse {
-  0%, 100% { transform: scale(1); box-shadow: 0 5px 15px rgba(0,0,0,0.07); }
-  50% { transform: scale(1.05); box-shadow: 0 12px 25px rgba(0,0,0,0.15); }
-}
-.employee-card.pulse { animation: pulse 1.5s infinite; }
+/* Pulse animation pour sanctions */
+@keyframes pulse { 0%,100%{transform:scale(1);box-shadow:0 5px 15px rgba(0,0,0,0.07);} 50%{transform:scale(1.05);box-shadow:0 12px 25px rgba(0,0,0,0.15);} }
+.employee-card.pulse { animation:pulse 1.5s infinite; }
 
-/* DETAILS EMPLOYÉ */
-#employee-details {
-  display: none;
-  background: #ffffff;
-  color: #2b3a67;
-  padding: 25px 30px;
-  border-radius: 25px;
-  max-width: 720px;
-  margin: 40px auto;
-  box-shadow: 0 15px 30px rgba(0,0,0,0.08);
-  border-top: 6px solid #667eea;
-  position: relative;
-}
-#employee-details .close-btn {
-  position: absolute;
-  top: 15px;
-  right: 20px;
-  font-size: 1.5rem;
-  font-weight: bold;
-  color: #667eea;
-  cursor: pointer;
-}
-#employee-details .close-btn:hover { color: #764ba2; }
+/* Détails employé */
+#employee-details { display:none; background:#ffffff; color:#2b3a67; padding:25px 30px; border-radius:25px; max-width:720px; margin:40px auto; box-shadow:0 15px 30px rgba(0,0,0,0.08); border-top:6px solid #667eea; position:relative; }
+#employee-details .close-btn { position:absolute; top:15px; right:20px; font-size:1.5rem; font-weight:bold; color:#667eea; cursor:pointer; }
+#employee-details .close-btn:hover { color:#764ba2; }
 
-table { width: 100%; border-collapse: collapse; margin-top: 20px; }
-td { padding: 10px; border-bottom: 1px solid #eee; }
-td:first-child { font-weight: 600; color: #2b3a67; }
+table { width:100%; border-collapse:collapse; margin-top:20px; }
+td { padding:10px; border-bottom:1px solid #eee; }
+td:first-child { font-weight:600; color:#2b3a67; }
 
 /* Responsive */
-@media (max-width: 650px){
-  #search-bar { width: 80%; }
-  .employee-card { width: 90%; }
-  #employee-details { width: 90%; }
-}
+@media (max-width:650px){ #search-bar{width:80%;} .employee-card{width:90%;} #employee-details{width:90%;} }
+
+/* Boutons diplômes */
+.diplome-btn { background: rgba(255,255,255,0.15); backdrop-filter: blur(8px); border:1px solid rgba(255,255,255,0.25); border-radius:10px; padding:8px 16px; margin:6px 4px; font-weight:500; cursor:pointer; transition:all 0.3s ease; font-size:0.95rem; box-shadow:0 3px 10px rgba(0,0,0,0.15); }
+.diplome-btn:hover { transform:translateY(-1px); background:linear-gradient(135deg,#8b80ff,#b48ef7); color:white; box-shadow:0 8px 20px rgba(118,75,162,0.3); }
+body.dark-mode .diplome-btn:hover { background:linear-gradient(135deg,#8b80ff,#b48ef7); color:white; }
+
+/* Popup diplôme */
+.diplome-popup { position:fixed; top:0; left:0; right:0; bottom:0; background:rgba(0,0,0,0.6); display:flex; justify-content:center; align-items:center; z-index:9999; animation:fadeIn 0.3s ease; }
+.popup-content { background:#fff; border-radius:0; padding:0; width:100%; max-width:800px; height:80%; box-shadow:0 10px 25px rgba(0,0,0,0.4); position:relative; overflow:hidden; }
+.popup-content iframe { width:100%; height:100%; border:none; border-radius:0; }
+.popup-close { position:absolute; top:8px; right:14px; font-size:1.6rem; cursor:pointer; color:#764ba2; transition:color 0.3s; font-weight:bold; }
+.popup-close:hover { color:#667eea; }
+@keyframes fadeIn { from{opacity:0} to{opacity:1} }
 </style>
 </head>
 <body>
 
 <header>
-  <h1>🔥​Paleto Garage</h1>
+  <h1>🔥 Paleto Garage</h1>
   <p>Ce site est soumis à des droits d'auteur, By Artonn</p>
   <div id="moon">🌙</div>
 
@@ -227,9 +114,9 @@ td:first-child { font-weight: 600; color: #2b3a67; }
 </div>
 
 <script>
-// === Navigation entre les onglets ===
+// === Navigation onglets ===
 document.querySelectorAll('#main-nav .nav-item').forEach(item=>{
-  item.addEventListener('click', ()=>{
+  item.addEventListener('click',()=>{
     document.querySelectorAll('#main-nav .nav-item').forEach(i=>i.classList.remove('active'));
     item.classList.add('active');
     const tab = item.dataset.tab;
@@ -238,7 +125,7 @@ document.querySelectorAll('#main-nav .nav-item').forEach(item=>{
   });
 });
 
-// === Lune : animation + mode sombre ===
+// === Lune / mode sombre ===
 const moon=document.getElementById("moon");
 moon.addEventListener("click",()=>{
   document.body.classList.toggle("dark-mode");
@@ -257,46 +144,33 @@ async function loadEmployees(){
   const res=await fetch(url);
   const data=await res.json();
   if(!data.values){ document.getElementById("employee-list").innerHTML="<p>Aucune donnée trouvée.</p>"; return; }
-
   const rows=data.values.filter(r=>r.some(c=>c.trim()!==""));
   const firstRowIsHeader=rows[0].some(v=>v.match(/[A-Za-z]/));
   const dataRows=firstRowIsHeader?rows.slice(1):rows;
-
   const unique=new Set();
   allEmployees=dataRows.map(r=>({
     id:r[1]||"", nom:r[2]||"", rib:r[3]||"", grade:r[4]||"", tel:r[5]||"",
     discord:r[6]||"", gmail:r[8]||"", diplome:r[9]||"", entree:r[10]||"",
     sortie:r[11]||"", sanction:r[12]||"", retrait:r[13]||""
   })).filter(e=>{
-    if(!e.nom.trim() || e.nom==="Prénom / Nom" || e.nom==="Démission/Licenciement" || unique.has(e.nom)) return false;
+    if(!e.nom.trim()||e.nom==="Prénom / Nom"||e.nom==="Démission/Licenciement"||unique.has(e.nom)) return false;
     unique.add(e.nom);
     return true;
   });
-
   filteredEmployees=[...allEmployees];
   displayEmployeeList(filteredEmployees);
 }
 
-// === Affichage des cartes employés ===
+// === Affichage employés ===
 function displayEmployeeList(employees){
   const list=document.getElementById("employee-list");
   list.innerHTML="";
   employees.forEach((emp,i)=>{
     const card=document.createElement("div");
     card.className="employee-card";
-
-    // ✅ couleurs et effet impulsion selon sanction
-    if(emp.sanction==="Avertissement 1"){
-      card.style.background="linear-gradient(145deg,#FFD700,#FFC107)";
-      card.classList.add("pulse");
-    } else if(emp.sanction==="Avertissement 2"){
-      card.style.background="linear-gradient(145deg,#FF8C00,#FF7F50)";
-      card.classList.add("pulse");
-    } else if(emp.sanction==="Licenciement"){
-      card.style.background="linear-gradient(145deg,#FF3333,#CC0000)";
-      card.classList.add("pulse");
-    }
-
+    if(emp.sanction==="Avertissement 1"){ card.style.background="linear-gradient(145deg,#FFD700,#FFC107)"; card.classList.add("pulse"); }
+    else if(emp.sanction==="Avertissement 2"){ card.style.background="linear-gradient(145deg,#FF8C00,#FF7F50)"; card.classList.add("pulse"); }
+    else if(emp.sanction==="Licenciement"){ card.style.background="linear-gradient(145deg,#FF3333,#CC0000)"; card.classList.add("pulse"); }
     card.innerHTML=`<div class="employee-name">${emp.nom}</div><div class="employee-grade">${emp.grade}</div>`;
     card.addEventListener("click",()=>showDetails(i));
     list.appendChild(card);
@@ -309,34 +183,18 @@ document.getElementById("search-bar").addEventListener("input",e=>{
   displayEmployeeList(filteredEmployees);
 });
 
-// === Détails employés ===
+// === Détails employé ===
 function showDetails(index){
   const emp = filteredEmployees[index];
-  document.getElementById("employee-list").style.display = "none";
+  document.getElementById("employee-list").style.display="none";
   const details = document.getElementById("employee-details");
-  details.style.display = "block";
-
-  const grades = [
-    "Patron","Co Patron","DRH","RH","Responsable D'atelier",
-    "Chef d'atelier","Confirmé","Mécano","Apprenti","Stagiaire"
-  ];
-
-  // === Diplômes ===
+  details.style.display="block";
+  const grades = ["Patron","Co Patron","DRH","RH","Responsable D'atelier","Chef d'atelier","Confirmé","Mécano","Apprenti","Stagiaire"];
   let diplomeHTML = "";
-  if (emp.diplome) {
-    const links = emp.diplome.split(/\s+/).filter(l => l.startsWith("http"));
-    diplomeHTML = links.map((link,i)=>{
-      const label = links.length === 1 ? "Diplôme" : `Diplôme ${i+1}`;
-      return `<button class="diplome-btn" onclick="openDiplomePopup('${link}')">🎓 ${label}</button>`;
-    }).join("");
-  } else {
-    diplomeHTML = "<em>Aucun diplôme enregistré</em>";
-  }
-
-  // === Menu déroulant de grade ===
-  const gradeOptions = grades.map(g => 
-    `<option value="${g}" ${g === emp.grade ? "selected" : ""}>${g}</option>`
-  ).join("");
+  if(emp.diplome){
+    const links = emp.diplome.split(/\s+/).filter(l=>l.startsWith("http"));
+    diplomeHTML = links.map((link,i)=>`<button class="diplome-btn" onclick="openDiplomePopup('${link}')">🎓 Diplôme ${i+1}</button>`).join("");
+  } else { diplomeHTML="<em>Aucun diplôme enregistré</em>"; }
 
   details.innerHTML = `
     <span class="close-btn" onclick="backToList()">✖</span>
@@ -344,24 +202,13 @@ function showDetails(index){
     <table>
       <tr><td>ID Unique</td><td>${emp.id}</td></tr>
       <tr><td>RIB</td><td>${emp.rib}</td></tr>
-      <tr>
-  <td>Grade</td>
-  <td>
-    <select id="grade-select" onchange="updateGrade('${emp.id}', this.value)">
-      <option value="${emp.grade}" selected>${emp.grade}</option>
-      <option value="Patron">Patron</option>
-      <option value="Co Patron">Co Patron</option>
-      <option value="DRH">DRH</option>
-      <option value="RH">RH</option>
-      <option value="Responsable D'atelier">Responsable D'atelier</option>
-      <option value="Chef d'atelier">Chef d'atelier</option>
-      <option value="Confirmé">Confirmé</option>
-      <option value="Mécano">Mécano</option>
-      <option value="Apprenti">Apprenti</option>
-      <option value="Stagiaire">Stagiaire</option>
-    </select>
-  </td>
-</tr>
+      <tr><td>Grade</td>
+        <td>
+          <select id="grade-select" onchange="updateGrade('${emp.id}', this.value)">
+            ${grades.map(g=>`<option value="${g}" ${g===emp.grade?'selected':''}>${g}</option>`).join('')}
+          </select>
+        </td>
+      </tr>
       <tr><td>Numéro</td><td>${emp.tel}</td></tr>
       <tr><td>ID Discord</td><td>${emp.discord}</td></tr>
       <tr><td>Permis Gmail</td><td>${emp.gmail}</td></tr>
@@ -370,9 +217,9 @@ function showDetails(index){
       <tr><td>Date de sortie</td><td>${emp.sortie}</td></tr>
       <tr><td>Avertissement / Licenciement</td><td>${emp.sanction}</td></tr>
       <tr><td>Date de retrait</td><td>${emp.retrait}</td></tr>
-    </table>`;
-
-  window.scrollTo({ top:0, behavior:"smooth" });
+    </table>
+  `;
+  window.scrollTo({top:0, behavior:"smooth"});
 }
 
 function backToList(){
@@ -380,121 +227,41 @@ function backToList(){
   document.getElementById("employee-list").style.display="flex";
 }
 
-// === Popup pour afficher un diplôme Google Drive ===
+// Popup diplômes
 function openDiplomePopup(url){
   const popup=document.createElement("div");
   popup.className="diplome-popup";
-  popup.innerHTML=`
-    <div class="popup-content">
-      <span class="popup-close" onclick="this.parentElement.parentElement.remove()">✖</span>
-      <iframe src="${url.replace('/view','/preview')}" frameborder="0" allowfullscreen></iframe>
-    </div>`;
+  popup.innerHTML=`<div class="popup-content">
+    <span class="popup-close" onclick="this.parentElement.parentElement.remove()">✖</span>
+    <iframe src="${url.replace('/view','/preview')}" frameborder="0" allowfullscreen></iframe>
+  </div>`;
   document.body.appendChild(popup);
 }
 
-// === Mettre à jour le grade dans Google Sheets ===
-async function updateGrade(empId, nouveauGrade) {
-  const url = "https://script.google.com/macros/s/AKfycbyuWhnGmuwxDHlLHsnP1xqHfZfMtP4-yYQFe5fXEU2X78kacvyfjpZsAsI3MBWi4qCl/exec"; // 🔗 remplace par ton URL si besoin
-
+// === Update grade via Google Apps Script ===
+async function updateGrade(empId, nouveauGrade){
+  const url = "https://script.google.com/macros/s/TON_SCRIPT_ID/exec"; // 🔗 ton script
   try {
-const proxy = "https://corsproxy.io/?";
-const res = await fetch(proxy + encodeURIComponent(url), {
-  method: "POST",
-  headers: { "Content-Type": "application/json" },
-  body: JSON.stringify({ id: empId, grade: nouveauGrade })
-});
-
+    const res = await fetch(url, {
+      method:"POST",
+      headers:{"Content-Type":"application/json"},
+      body: JSON.stringify({id:empId, grade:nouveauGrade})
+    });
     const data = await res.json();
-    if (data.success) {
-      alert("✅ Le grade a été mis à jour avec succès !");
-    } else {
-      alert("❌ Erreur : " + data.error);
-    }
-  } catch (err) {
-    alert("⚠️ Erreur réseau : " + err.message);
+    if(data.success){
+      alert(`✅ Le grade de l'employé a été mis à jour en "${nouveauGrade}"`);
+      const emp = filteredEmployees.find(e=>e.id===empId);
+      if(emp){ emp.grade=nouveauGrade; displayEmployeeList(filteredEmployees); }
+    } else { alert("❌ Erreur : "+(data.error||JSON.stringify(data))); }
+  } catch(err){
+    alert("⚠️ Erreur réseau : "+err.message);
+    console.error(err);
   }
 }
 
-
+// === Charger les employés ===
 loadEmployees();
 </script>
 
-<style>
-/* === Boutons de diplôme plus modernes et discrets === */
-.diplome-btn {
-  background: rgba(255, 255, 255, 0.15);
-  backdrop-filter: blur(8px);
-  border: 1px solid rgba(255, 255, 255, 0.25);
-  border-radius: 10px;
-  padding: 8px 16px;
-  margin: 6px 4px;
-  font-weight: 500;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  font-size: 0.95rem;
-  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.15);
-}
-
-.diplome-btn:hover {
-  transform: translateY(-1px);
-  background: linear-gradient(135deg, #8b80ff, #b48ef7);
-  color: white;
-  box-shadow: 0 8px 20px rgba(118, 75, 162, 0.3);
-}
-
-body.dark-mode .diplome-btn:hover {
-  background: linear-gradient(135deg, #8b80ff, #b48ef7);
-  color: white;
-}
-
-
-/* === Animation impulsion pour sanctions === */
-@keyframes pulse {
-  0%,100%{transform:scale(1);box-shadow:0 5px 15px rgba(0,0,0,0.07);}
-  50%{transform:scale(1.05);box-shadow:0 12px 25px rgba(0,0,0,0.15);}
-}
-.employee-card.pulse{animation:pulse 1.5s infinite;}
-
-/* === Popup diplôme === */
-.diplome-popup {
-  position: fixed;
-  top:0;left:0;right:0;bottom:0;
-  background: rgba(0,0,0,0.6);
-  display:flex;
-  justify-content:center;
-  align-items:center;
-  z-index:9999;
-  animation: fadeIn 0.3s ease;
-}
-.popup-content {
-  background:#fff;
-  border-radius:0px;
-  padding:0px;
-  width: 100%;
-  max-width:800px;
-  height:80%;
-  box-shadow:0 10px 25px rgba(0,0,0,0.4);
-  position:relative;
-  overflow:hidden;
-}
-.popup-content iframe {
-  width:100%;
-  height:100%;
-  border:none;
-  border-radius:0px;
-}
-.popup-close {
-  position:absolute;
-  top:8px;
-  right:14px;
-  font-size:1.6rem;
-  cursor:pointer;
-  color:#764ba2;
-  transition:color 0.3s;
-  font-weight:bold;
-}
-.popup-close:hover {color:#667eea;}
-@keyframes fadeIn {from{opacity:0}to{opacity:1}}
-</style>
 </body>
 </html>
