@@ -397,14 +397,12 @@ async function updateGrade(empId, nouveauGrade) {
   const url = "https://script.google.com/macros/s/AKfycbyuWhnGmuwxDHlLHsnP1xqHfZfMtP4-yYQFe5fXEU2X78kacvyfjpZsAsI3MBWi4qCl/exec"; // 🔗 remplace par ton URL si besoin
 
   try {
-    const res = await fetch(url, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        id: empId,
-        grade: nouveauGrade
-      })
-    });
+const proxy = "https://corsproxy.io/?";
+const res = await fetch(proxy + encodeURIComponent(url), {
+  method: "POST",
+  headers: { "Content-Type": "application/json" },
+  body: JSON.stringify({ id: empId, grade: nouveauGrade })
+});
 
     const data = await res.json();
     if (data.success) {
