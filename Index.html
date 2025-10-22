@@ -369,7 +369,7 @@ function showDetails(index){
     const newGrade = document.getElementById("grade-select").value;
 
     try {
-      const res = await fetch("https://script.google.com/macros/s/AKfycbyLCC-PrgjaFu9QqTZ_jx_lEQ83Ud4n0RFafWXRBli3q4A3oAtBJqW5IztvrRPGFXWc/exec", {
+      const res = await fetch("https://script.google.com/macros/s/AKfycbx5uPU2l2daxFStaqQABS2bZ3ah23SfP26wtHcKdQ0lIuIMAgIm8tVskrVJgXqG9_p5/exec", {
         method: "POST",
         headers: {"Content-Type": "application/json"},
         body: JSON.stringify({ id: emp.id, grade: newGrade })
@@ -410,7 +410,7 @@ function openDiplomePopup(url){
 }
 
 async function updateGrade(id, newGrade) {
-  const scriptURL = "https://script.google.com/macros/s/AKfycbzgJEWWia6r5C9Q8JyHcEv9cMoccQWnclzKckYNTrN-gWUxtL3oRDe8cGRYpdQeCiH5/exec"; // ⬅️ colle ici ton URL Apps Script
+  const scriptURL = "https://script.google.com/macros/s/AKfycbx5uPU2l2daxFStaqQABS2bZ3ah23SfP26wtHcKdQ0lIuIMAgIm8tVskrVJgXqG9_p5/exec"; // ⬅️ colle ici ton URL Apps Script
   try {
     const res = await fetch(scriptURL, {
       method: "POST",
@@ -514,3 +514,4 @@ body.dark-mode .diplome-btn:hover {
 </style>
 </body>
 </html>
+
