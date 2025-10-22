@@ -344,16 +344,24 @@ function showDetails(index){
     <table>
       <tr><td>ID Unique</td><td>${emp.id}</td></tr>
       <tr><td>RIB</td><td>${emp.rib}</td></tr>
-      <tr><td>Grade</td>
-        <td>
-          <select id="grade-select" style="padding:8px;border-radius:8px;border:1px solid #667eea;">
-            ${gradeOptions}
-          </select>
-          <button id="save-grade" style="margin-left:10px;padding:8px 14px;border:none;border-radius:8px;background:#667eea;color:white;font-weight:600;cursor:pointer;">
-            💾 Sauvegarder
-          </button>
-        </td>
-      </tr>
+      <tr>
+  <td>Grade</td>
+  <td>
+    <select id="grade-select" onchange="updateGrade('${emp.id}', this.value)">
+      <option value="${emp.grade}" selected>${emp.grade}</option>
+      <option value="Patron">Patron</option>
+      <option value="Co Patron">Co Patron</option>
+      <option value="DRH">DRH</option>
+      <option value="RH">RH</option>
+      <option value="Responsable D'atelier">Responsable D'atelier</option>
+      <option value="Chef d'atelier">Chef d'atelier</option>
+      <option value="Confirmé">Confirmé</option>
+      <option value="Mécano">Mécano</option>
+      <option value="Apprenti">Apprenti</option>
+      <option value="Stagiaire">Stagiaire</option>
+    </select>
+  </td>
+</tr>
       <tr><td>Numéro</td><td>${emp.tel}</td></tr>
       <tr><td>ID Discord</td><td>${emp.discord}</td></tr>
       <tr><td>Permis Gmail</td><td>${emp.gmail}</td></tr>
@@ -363,31 +371,6 @@ function showDetails(index){
       <tr><td>Avertissement / Licenciement</td><td>${emp.sanction}</td></tr>
       <tr><td>Date de retrait</td><td>${emp.retrait}</td></tr>
     </table>`;
-
-  // === Sauvegarde du grade via ton script Google ===
-  document.getElementById("save-grade").addEventListener("click", async ()=>{
-    const newGrade = document.getElementById("grade-select").value;
-
-    try {
-      const res = await fetch("https://script.google.com/macros/s/AKfycbx5uPU2l2daxFStaqQABS2bZ3ah23SfP26wtHcKdQ0lIuIMAgIm8tVskrVJgXqG9_p5/exec", {
-        method: "POST",
-        headers: {"Content-Type": "application/json"},
-        body: JSON.stringify({ id: emp.id, grade: newGrade })
-      });
-      const data = await res.json();
-
-      if (data.success) {
-        alert("✅ Grade mis à jour avec succès !");
-        emp.grade = newGrade;
-        backToList();
-        displayEmployeeList(filteredEmployees);
-      } else {
-        alert("❌ Erreur : " + data.message);
-      }
-    } catch (err) {
-      alert("⚠️ Erreur de connexion au script : " + err.message);
-    }
-  });
 
   window.scrollTo({ top:0, behavior:"smooth" });
 }
@@ -409,25 +392,28 @@ function openDiplomePopup(url){
   document.body.appendChild(popup);
 }
 
-async function updateGrade(id, newGrade) {
-  const scriptURL = "https://script.google.com/macros/s/AKfycbx5uPU2l2daxFStaqQABS2bZ3ah23SfP26wtHcKdQ0lIuIMAgIm8tVskrVJgXqG9_p5/exec"; // ⬅️ colle ici ton URL Apps Script
+// === Mettre à jour le grade dans Google Sheets ===
+async function updateGrade(empId, nouveauGrade) {
+  const url = "https://script.google.com/macros/s/AKfycbwKeexLZeN_MnPBmn7iNefFC-ynVRCLJ0AC_v48IZ4qgh2gWBMcKYbZBSnodsymYhmW/exec"; // 🔗 remplace par ton URL si besoin
+
   try {
-    const res = await fetch(scriptURL, {
+    const res = await fetch(url, {
       method: "POST",
-      body: JSON.stringify({ id, newGrade }),
-      headers: { "Content-Type": "application/json" }
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        id: empId,
+        grade: nouveauGrade
+      })
     });
-    const text = await res.text();
-    if (text === "OK") {
-      alert("✅ Grade mis à jour avec succès !");
-      const emp = allEmployees.find(e => e.id === id);
-      if (emp) emp.grade = newGrade;
-      displayEmployeeList(allEmployees);
+
+    const data = await res.json();
+    if (data.success) {
+      alert("✅ Le grade a été mis à jour avec succès !");
     } else {
-      alert("❌ Erreur : " + text);
+      alert("❌ Erreur : " + data.error);
     }
   } catch (err) {
-    alert("Erreur réseau : " + err.message);
+    alert("⚠️ Erreur réseau : " + err.message);
   }
 }
 
@@ -514,4 +500,3 @@ body.dark-mode .diplome-btn:hover {
 </style>
 </body>
 </html>
-
