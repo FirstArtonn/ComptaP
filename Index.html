@@ -311,41 +311,49 @@ document.getElementById("search-bar").addEventListener("input",e=>{
 
 // === Détails employés ===
 function showDetails(index){
-  const emp=filteredEmployees[index];
-  document.getElementById("employee-list").style.display="none";
-  const details=document.getElementById("employee-details");
-  details.style.display="block";
+  const emp = filteredEmployees[index];
+  document.getElementById("employee-list").style.display = "none";
+  const details = document.getElementById("employee-details");
+  details.style.display = "block";
 
-  // === Diplômes : boutons + aperçu intégré
-  let diplomeHTML="";
-  if(emp.diplome){
-    const links=emp.diplome.split(/\s+/).filter(l=>l.startsWith("http"));
-    diplomeHTML=links.map((link,i)=>{
-      const label=links.length===1?"Diplôme":`Diplôme ${i+1}`;
+  const grades = [
+    "Patron","Co Patron","DRH","RH","Responsable D'atelier",
+    "Chef d'atelier","Confirmé","Mécano","Apprenti","Stagiaire"
+  ];
+
+  // === Diplômes ===
+  let diplomeHTML = "";
+  if (emp.diplome) {
+    const links = emp.diplome.split(/\s+/).filter(l => l.startsWith("http"));
+    diplomeHTML = links.map((link,i)=>{
+      const label = links.length === 1 ? "Diplôme" : `Diplôme ${i+1}`;
       return `<button class="diplome-btn" onclick="openDiplomePopup('${link}')">🎓 ${label}</button>`;
     }).join("");
   } else {
-    diplomeHTML="<em>Aucun diplôme enregistré</em>";
+    diplomeHTML = "<em>Aucun diplôme enregistré</em>";
   }
 
-  details.innerHTML=`
+  // === Menu déroulant de grade ===
+  const gradeOptions = grades.map(g => 
+    `<option value="${g}" ${g === emp.grade ? "selected" : ""}>${g}</option>`
+  ).join("");
+
+  details.innerHTML = `
     <span class="close-btn" onclick="backToList()">✖</span>
     <h2>👤 ${emp.nom}</h2>
     <table>
       <tr><td>ID Unique</td><td>${emp.id}</td></tr>
       <tr><td>RIB</td><td>${emp.rib}</td></tr>
-<tr>
-  <td>Grade</td>
-  <td>
-    <select id="grade-select" onchange="updateGrade('${emp.id}', this.value)">
-      ${[
-        "Patron","Co Patron","DRH","RH","Responsable D'atelier",
-        "Chef d'atelier","Confirmé","Mécano","Apprenti","Stagiaire"
-      ].map(g => `<option value="${g}" ${g===emp.grade?"selected":""}>${g}</option>`).join("")}
-    </select>
-  </td>
-</tr>
-
+      <tr><td>Grade</td>
+        <td>
+          <select id="grade-select" style="padding:8px;border-radius:8px;border:1px solid #667eea;">
+            ${gradeOptions}
+          </select>
+          <button id="save-grade" style="margin-left:10px;padding:8px 14px;border:none;border-radius:8px;background:#667eea;color:white;font-weight:600;cursor:pointer;">
+            💾 Sauvegarder
+          </button>
+        </td>
+      </tr>
       <tr><td>Numéro</td><td>${emp.tel}</td></tr>
       <tr><td>ID Discord</td><td>${emp.discord}</td></tr>
       <tr><td>Permis Gmail</td><td>${emp.gmail}</td></tr>
@@ -355,7 +363,33 @@ function showDetails(index){
       <tr><td>Avertissement / Licenciement</td><td>${emp.sanction}</td></tr>
       <tr><td>Date de retrait</td><td>${emp.retrait}</td></tr>
     </table>`;
-  window.scrollTo({top:0,behavior:"smooth"});
+
+  // === Sauvegarde du grade via ton script Google ===
+  document.getElementById("save-grade").addEventListener("click", async ()=>{
+    const newGrade = document.getElementById("grade-select").value;
+
+    try {
+      const res = await fetch("https://script.google.com/macros/s/AKfycbyLCC-PrgjaFu9QqTZ_jx_lEQ83Ud4n0RFafWXRBli3q4A3oAtBJqW5IztvrRPGFXWc/exec", {
+        method: "POST",
+        headers: {"Content-Type": "application/json"},
+        body: JSON.stringify({ id: emp.id, grade: newGrade })
+      });
+      const data = await res.json();
+
+      if (data.success) {
+        alert("✅ Grade mis à jour avec succès !");
+        emp.grade = newGrade;
+        backToList();
+        displayEmployeeList(filteredEmployees);
+      } else {
+        alert("❌ Erreur : " + data.message);
+      }
+    } catch (err) {
+      alert("⚠️ Erreur de connexion au script : " + err.message);
+    }
+  });
+
+  window.scrollTo({ top:0, behavior:"smooth" });
 }
 
 function backToList(){
