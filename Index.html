@@ -311,41 +311,57 @@ document.getElementById("search-bar").addEventListener("input",e=>{
 
 // === Détails employés ===
 function showDetails(index){
-  const emp=filteredEmployees[index];
-  document.getElementById("employee-list").style.display="none";
-  const details=document.getElementById("employee-details");
-  details.style.display="block";
+  const emp = filteredEmployees[index];
+  document.getElementById("employee-list").style.display = "none";
+  const details = document.getElementById("employee-details");
+  details.style.display = "block";
 
-  // === Diplômes : boutons + aperçu intégré
-  let diplomeHTML="";
-  if(emp.diplome){
-    const links=emp.diplome.split(/\s+/).filter(l=>l.startsWith("http"));
-    diplomeHTML=links.map((link,i)=>{
-      const label=links.length===1?"Diplôme":`Diplôme ${i+1}`;
+  const grades = [
+    "Patron","Co Patron","DRH","RH","Responsable D'atelier",
+    "Chef d'atelier","Confirmé","Mécano","Apprenti","Stagiaire"
+  ];
+
+  // === Diplômes ===
+  let diplomeHTML = "";
+  if (emp.diplome) {
+    const links = emp.diplome.split(/\s+/).filter(l => l.startsWith("http"));
+    diplomeHTML = links.map((link,i)=>{
+      const label = links.length === 1 ? "Diplôme" : `Diplôme ${i+1}`;
       return `<button class="diplome-btn" onclick="openDiplomePopup('${link}')">🎓 ${label}</button>`;
     }).join("");
   } else {
-    diplomeHTML="<em>Aucun diplôme enregistré</em>";
+    diplomeHTML = "<em>Aucun diplôme enregistré</em>";
   }
 
-  details.innerHTML=`
+  // === Menu déroulant de grade ===
+  const gradeOptions = grades.map(g => 
+    `<option value="${g}" ${g === emp.grade ? "selected" : ""}>${g}</option>`
+  ).join("");
+
+  details.innerHTML = `
     <span class="close-btn" onclick="backToList()">✖</span>
     <h2>👤 ${emp.nom}</h2>
     <table>
       <tr><td>ID Unique</td><td>${emp.id}</td></tr>
       <tr><td>RIB</td><td>${emp.rib}</td></tr>
-<tr>
+      <tr>
   <td>Grade</td>
   <td>
     <select id="grade-select" onchange="updateGrade('${emp.id}', this.value)">
-      ${[
-        "Patron","Co Patron","DRH","RH","Responsable D'atelier",
-        "Chef d'atelier","Confirmé","Mécano","Apprenti","Stagiaire"
-      ].map(g => `<option value="${g}" ${g===emp.grade?"selected":""}>${g}</option>`).join("")}
+      <option value="${emp.grade}" selected>${emp.grade}</option>
+      <option value="Patron">Patron</option>
+      <option value="Co Patron">Co Patron</option>
+      <option value="DRH">DRH</option>
+      <option value="RH">RH</option>
+      <option value="Responsable D'atelier">Responsable D'atelier</option>
+      <option value="Chef d'atelier">Chef d'atelier</option>
+      <option value="Confirmé">Confirmé</option>
+      <option value="Mécano">Mécano</option>
+      <option value="Apprenti">Apprenti</option>
+      <option value="Stagiaire">Stagiaire</option>
     </select>
   </td>
 </tr>
-
       <tr><td>Numéro</td><td>${emp.tel}</td></tr>
       <tr><td>ID Discord</td><td>${emp.discord}</td></tr>
       <tr><td>Permis Gmail</td><td>${emp.gmail}</td></tr>
@@ -355,7 +371,8 @@ function showDetails(index){
       <tr><td>Avertissement / Licenciement</td><td>${emp.sanction}</td></tr>
       <tr><td>Date de retrait</td><td>${emp.retrait}</td></tr>
     </table>`;
-  window.scrollTo({top:0,behavior:"smooth"});
+
+  window.scrollTo({ top:0, behavior:"smooth" });
 }
 
 function backToList(){
@@ -375,25 +392,26 @@ function openDiplomePopup(url){
   document.body.appendChild(popup);
 }
 
-async function updateGrade(id, newGrade) {
-  const scriptURL = "https://script.google.com/macros/s/AKfycbx8UcKzySSIaXfkXCBFGz3Dj90lmJ2qZ-W5aiMLWy2dEU7gAXzvX-NOZ1hzGkLbVFwt/exec"; // ⬅️ colle ici ton URL Apps Script
+// === Mettre à jour le grade dans Google Sheets ===
+async function updateGrade(empId, nouveauGrade) {
+  const url = "https://script.google.com/macros/s/AKfycbx8UcKzySSIaXfkXCBFGz3Dj90lmJ2qZ-W5aiMLWy2dEU7gAXzvX-NOZ1hzGkLbVFwt/exec"; // 🔗 remplace par ton URL si besoin
+
   try {
-    const res = await fetch(scriptURL, {
-      method: "POST",
-      body: JSON.stringify({ id, newGrade }),
-      headers: { "Content-Type": "application/json" }
-    });
-    const text = await res.text();
-    if (text === "OK") {
-      alert("✅ Grade mis à jour avec succès !");
-      const emp = allEmployees.find(e => e.id === id);
-      if (emp) emp.grade = newGrade;
-      displayEmployeeList(allEmployees);
+const proxy = "https://corsproxy.io/?";
+const res = await fetch(proxy + encodeURIComponent(url), {
+  method: "POST",
+  headers: { "Content-Type": "application/json" },
+  body: JSON.stringify({ id: empId, grade: nouveauGrade })
+});
+
+    const data = await res.json();
+    if (data.success) {
+      alert("✅ Le grade a été mis à jour avec succès !");
     } else {
-      alert("❌ Erreur : " + text);
+      alert("❌ Erreur : " + data.error);
     }
   } catch (err) {
-    alert("Erreur réseau : " + err.message);
+    alert("⚠️ Erreur réseau : " + err.message);
   }
 }
 
