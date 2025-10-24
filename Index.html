@@ -413,6 +413,12 @@ async function updateGrade(empId, nouveauGrade) {
   const url = "https://script.google.com/macros/s/AKfycbx8UcKzySSIaXfkXCBFGz3Dj90lmJ2qZ-W5aiMLWy2dEU7gAXzvX-NOZ1hzGkLbVFwt/exec";
   const proxy = "https://corsproxy.io/?";
 
+  // 🕒 Toast immédiat
+  const toast = document.createElement("div");
+  toast.className = "toast info visible";
+  toast.textContent = "⏳ Mise à jour du grade en cours...";
+  document.body.appendChild(toast);
+
   try {
     const res = await fetch(proxy + encodeURIComponent(url), {
       method: "POST",
@@ -422,25 +428,32 @@ async function updateGrade(empId, nouveauGrade) {
 
     const text = await res.text();
 
-    // ✅ Si ça contient "DOCTYPE", on ignore le message (réponse HTML)
+    // 🔹 Si le proxy renvoie du HTML, on considère la requête réussie
     if (text.includes("<!DOCTYPE") || text.includes("<html")) {
-      console.info("Réponse HTML ignorée (proxy CORS).");
-      showToast("✅ Grade mis à jour avec succès !", "success");
+      toast.className = "toast success visible";
+      toast.textContent = "Grade mis à jour avec succès !";
+      setTimeout(() => toast.remove(), 2500);
       return;
     }
 
-    // Sinon, on tente de lire le JSON normalement
+    // 🔹 Sinon, on lit le JSON
     const data = JSON.parse(text);
     if (data.success) {
-      showToast("✅ Grade mis à jour avec succès !", "success");
+      toast.className = "toast success visible";
+      toast.textContent = "Grade mis à jour avec succès !";
     } else {
-      showToast("❌ Erreur : " + (data.error || "Réponse invalide du serveur"), "error");
+      toast.className = "toast error visible";
+      toast.textContent = "❌ Erreur : " + (data.error || "Réponse invalide");
     }
 
   } catch (err) {
     console.error("Erreur réseau :", err);
-    showToast("⚠️ Erreur réseau : impossible de contacter le serveur.", "error");
+    toast.className = "toast error visible";
+    toast.textContent = "⚠️ Erreur réseau : impossible de contacter le serveur.";
   }
+
+  // 🔹 Disparition automatique après 3 secondes
+  setTimeout(() => toast.remove(), 3000);
 }
 
 
