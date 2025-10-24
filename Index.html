@@ -188,6 +188,106 @@ td:first-child { font-weight: 600; color: #2b3a67; }
   .employee-card { width: 90%; }
   #employee-details { width: 90%; }
 }
+
+/* === Sélecteur de grade stylisé type site moderne === */
+.grade-wrapper {
+  position: relative;
+  display: inline-block;
+  width: 220px; /* largeur fixe, ajuste si besoin */
+  font-family: 'Roboto', sans-serif;
+  margin: 5px 0;
+}
+
+/* Le bouton principal qui affiche la sélection */
+.grade-wrapper button {
+  width: 100%;
+  padding: 12px 20px;
+  font-size: 1rem;
+  font-weight: 600;
+  color: #2b3a67;
+  background: rgba(255,255,255,0.15);
+  backdrop-filter: blur(8px);
+  border: 1px solid rgba(255,255,255,0.25);
+  border-radius: 12px;
+  cursor: pointer;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.12);
+}
+
+.grade-wrapper button:hover {
+  background: linear-gradient(135deg, #8b80ff, #b48ef7);
+  color: #fff;
+  box-shadow: 0 8px 20px rgba(118,75,162,0.25);
+  transform: translateY(-2px);
+}
+
+/* Flèche */
+.grade-wrapper button::after {
+  content: '▼';
+  font-size: 0.8rem;
+  color: #667eea;
+  transition: transform 0.3s ease;
+}
+
+/* Liste déroulante */
+.grade-wrapper ul {
+  position: absolute;
+  top: calc(100% + 5px);
+  left: 0;
+  width: 100%;
+  background: rgba(255,255,255,0.15);
+  backdrop-filter: blur(8px);
+  border-radius: 12px;
+  box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.3s ease, opacity 0.3s ease;
+  opacity: 0;
+  z-index: 10;
+}
+
+/* Liste ouverte */
+.grade-wrapper.open ul {
+  max-height: 500px;
+  opacity: 1;
+}
+
+/* Chaque option */
+.grade-wrapper ul li {
+  padding: 12px 20px;
+  cursor: pointer;
+  transition: background 0.2s ease, color 0.2s ease;
+}
+
+.grade-wrapper ul li:hover {
+  background: linear-gradient(135deg, #8b80ff, #b48ef7);
+  color: white;
+}
+
+/* Mode sombre */
+body.dark-mode .grade-wrapper button {
+  background: rgba(255,255,255,0.08);
+  color: #eaeaff;
+  border: 1px solid rgba(255,255,255,0.15);
+}
+body.dark-mode .grade-wrapper button:hover {
+  background: linear-gradient(135deg, #8b80ff, #b48ef7);
+  color: white;
+}
+body.dark-mode .grade-wrapper ul {
+  background: rgba(255,255,255,0.08);
+}
+body.dark-mode .grade-wrapper ul li:hover {
+  background: linear-gradient(135deg, #8b80ff, #b48ef7);
+  color: white;
+}
+
 </style>
 </head>
 <body>
@@ -279,13 +379,14 @@ async function loadEmployees(){
 
 // === Affichage des cartes employés ===
 function displayEmployeeList(employees){
-  const list=document.getElementById("employee-list");
-  list.innerHTML="";
+  const list = document.getElementById("employee-list");
+  list.innerHTML = "";
   employees.forEach((emp,i)=>{
-    const card=document.createElement("div");
-    card.className="employee-card";
-
-    // ✅ couleurs et effet impulsion selon sanction
+    const card = document.createElement("div");
+    card.className = "employee-card";
+    card.setAttribute("data-id", emp.id); // <-- Important !
+    
+    // Style selon sanction
     if(emp.sanction==="Avertissement 1"){
       card.style.background="linear-gradient(145deg,#FFD700,#FFC107)";
       card.classList.add("pulse");
@@ -297,11 +398,12 @@ function displayEmployeeList(employees){
       card.classList.add("pulse");
     }
 
-    card.innerHTML=`<div class="employee-name">${emp.nom}</div><div class="employee-grade">${emp.grade}</div>`;
+    card.innerHTML = `<div class="employee-name">${emp.nom}</div><div class="employee-grade">${emp.grade}</div>`;
     card.addEventListener("click",()=>showDetails(i));
     list.appendChild(card);
   });
 }
+
 
 document.getElementById("search-bar").addEventListener("input",e=>{
   const val=e.target.value.toLowerCase();
@@ -333,10 +435,15 @@ function showDetails(index){
     diplomeHTML = "<em>Aucun diplôme enregistré</em>";
   }
 
-  // === Menu déroulant de grade ===
-  const gradeOptions = grades.map(g => 
-    `<option value="${g}" ${g === emp.grade ? "selected" : ""}>${g}</option>`
-  ).join("");
+  // === Menu déroulant stylisé de grade ===
+  const gradeHTML = `
+    <div class="grade-wrapper">
+      <button type="button">${emp.grade || "Sélectionner un grade"}</button>
+      <ul>
+        ${grades.map(g=>`<li onclick="updateGrade('${emp.id}','${g}');this.closest('.grade-wrapper').querySelector('button').textContent='${g}'">${g}</li>`).join("")}
+      </ul>
+    </div>
+  `;
 
   details.innerHTML = `
     <span class="close-btn" onclick="backToList()">✖</span>
@@ -344,24 +451,7 @@ function showDetails(index){
     <table>
       <tr><td>ID Unique</td><td>${emp.id}</td></tr>
       <tr><td>RIB</td><td>${emp.rib}</td></tr>
-      <tr>
-  <td>Grade</td>
-  <td>
-    <select id="grade-select" onchange="updateGrade('${emp.id}', this.value)">
-      <option value="${emp.grade}" selected>${emp.grade}</option>
-      <option value="Patron">Patron</option>
-      <option value="Co Patron">Co Patron</option>
-      <option value="DRH">DRH</option>
-      <option value="RH">RH</option>
-      <option value="Responsable D'atelier">Responsable D'atelier</option>
-      <option value="Chef d'atelier">Chef d'atelier</option>
-      <option value="Confirmé">Confirmé</option>
-      <option value="Mécano">Mécano</option>
-      <option value="Apprenti">Apprenti</option>
-      <option value="Stagiaire">Stagiaire</option>
-    </select>
-  </td>
-</tr>
+      <tr><td>Grade</td><td>${gradeHTML}</td></tr>
       <tr><td>Numéro</td><td>${emp.tel}</td></tr>
       <tr><td>ID Discord</td><td>${emp.discord}</td></tr>
       <tr><td>Permis Gmail</td><td>${emp.gmail}</td></tr>
@@ -370,7 +460,21 @@ function showDetails(index){
       <tr><td>Date de sortie</td><td>${emp.sortie}</td></tr>
       <tr><td>Avertissement / Licenciement</td><td>${emp.sanction}</td></tr>
       <tr><td>Date de retrait</td><td>${emp.retrait}</td></tr>
-    </table>`;
+    </table>
+  `;
+
+  // === Gestion de l'ouverture du dropdown ===
+  document.querySelectorAll('.grade-wrapper').forEach(wrapper=>{
+    const button = wrapper.querySelector('button');
+    const ul = wrapper.querySelector('ul');
+    button.addEventListener('click',(e)=>{
+      e.stopPropagation();
+      wrapper.classList.toggle('open');
+    });
+  });
+
+  // Fermeture si clic en dehors
+  document.addEventListener('click',()=>document.querySelectorAll('.grade-wrapper').forEach(w=>w.classList.remove('open')));
 
   window.scrollTo({ top:0, behavior:"smooth" });
 }
@@ -392,31 +496,24 @@ function openDiplomePopup(url){
   document.body.appendChild(popup);
 }
 
-// === Affichage d'une notification visuelle ===
+// === Notifications (toast) ===
 function showToast(message, type = "info") {
   const toast = document.createElement("div");
   toast.className = `toast ${type}`;
   toast.textContent = message;
   document.body.appendChild(toast);
-
-  // Animation d'apparition
   setTimeout(() => toast.classList.add("visible"), 50);
-
-  // Disparition après 3 secondes
-  setTimeout(() => {
-    toast.classList.remove("visible");
-    setTimeout(() => toast.remove(), 400);
-  }, 3000);
+  setTimeout(() => { toast.classList.remove("visible"); setTimeout(()=>toast.remove(),400); }, 3000);
 }
 
+// === Mise à jour du grade ===
 async function updateGrade(empId, nouveauGrade) {
   const url = "https://script.google.com/macros/s/AKfycbx8UcKzySSIaXfkXCBFGz3Dj90lmJ2qZ-W5aiMLWy2dEU7gAXzvX-NOZ1hzGkLbVFwt/exec";
   const proxy = "https://corsproxy.io/?";
 
-  // 🕒 Toast immédiat
   const toast = document.createElement("div");
-  toast.className = "toast info visible";
-  toast.textContent = "⏳ Mise à jour du grade en cours...";
+  toast.className = "toast loading visible";
+  toast.innerHTML = `<div class="spinner"></div><span>⏳ Mise à jour du grade en cours...</span>`;
   document.body.appendChild(toast);
 
   try {
@@ -427,36 +524,125 @@ async function updateGrade(empId, nouveauGrade) {
     });
 
     const text = await res.text();
-
-    // 🔹 Si le proxy renvoie du HTML, on considère la requête réussie
     if (text.includes("<!DOCTYPE") || text.includes("<html")) {
-      toast.className = "toast success visible";
-      toast.textContent = "Grade mis à jour avec succès !";
-      setTimeout(() => toast.remove(), 2500);
+      showSuccess(toast, "Grade mis à jour avec succès !");
       return;
     }
 
-    // 🔹 Sinon, on lit le JSON
     const data = JSON.parse(text);
-    if (data.success) {
-      toast.className = "toast success visible";
-      toast.textContent = "Grade mis à jour avec succès !";
-    } else {
-      toast.className = "toast error visible";
-      toast.textContent = "❌ Erreur : " + (data.error || "Réponse invalide");
-    }
+    if (data.success) showSuccess(toast, "Grade mis à jour avec succès !");
+    else showError(toast, "❌ Erreur : " + (data.error || "Réponse invalide"));
 
   } catch (err) {
     console.error("Erreur réseau :", err);
-    toast.className = "toast error visible";
-    toast.textContent = "⚠️ Erreur réseau : impossible de contacter le serveur.";
+    showError(toast, "⚠️ Erreur réseau : impossible de contacter le serveur.");
   }
 
-  // 🔹 Disparition automatique après 3 secondes
-  setTimeout(() => toast.remove(), 3000);
+  function showSuccess(toast, message) {
+    toast.className = "toast success visible";
+    toast.innerHTML = `<span>${message}</span>`;
+    setTimeout(()=>toast.remove(),2500);
+  }
+
+  function showError(toast, message) {
+    toast.className = "toast error visible";
+    toast.innerHTML = `<span>${message}</span>`;
+    setTimeout(()=>toast.remove(),3500);
+  }
 }
 
+// === Rafraîchissement automatique des cartes employés ===
+async function refreshEmployeesLive() {
+  const url=`https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}/values/${encodeURIComponent(SHEET_NAME)}?key=${API_KEY}`;
+  
+  try {
+    const res = await fetch(url);
+    const data = await res.json();
+    if(!data.values) return;
 
+    const rows = data.values.filter(r => r.some(c => c.trim() !== ""));
+    const firstRowIsHeader = rows[0].some(v => v.match(/[A-Za-z]/));
+    const dataRows = firstRowIsHeader ? rows.slice(1) : rows;
+
+    const unique = new Set();
+    const latestEmployees = dataRows.map(r => ({
+      id: r[1]||"",
+      nom: r[2]||"",
+      rib: r[3]||"",
+      grade: r[4]||"",
+      tel: r[5]||"",
+      discord: r[6]||"",
+      gmail: r[8]||"",
+      diplome: r[9]||"",
+      entree: r[10]||"",
+      sortie: r[11]||"",
+      sanction: r[12]||"",
+      retrait: r[13]||""
+    })).filter(e=>{
+      if(!e.nom.trim() || e.nom==="Prénom / Nom" || e.nom==="Démission/Licenciement" || unique.has(e.nom)) return false;
+      unique.add(e.nom);
+      return true;
+    });
+
+    // Met à jour le tableau global
+    allEmployees = latestEmployees;
+    filteredEmployees = [...allEmployees];
+
+    // Met à jour chaque carte existante
+    latestEmployees.forEach(emp => {
+      const card = document.querySelector(`.employee-card[data-id="${emp.id}"]`);
+      if(card){
+        // Garde la pulse si elle est déjà là
+        const hasPulse = card.classList.contains("pulse");
+
+        // Contenu
+        card.innerHTML = `
+          <div class="employee-name">${emp.nom}</div>
+          <div class="employee-grade">${emp.grade}</div>
+        `;
+
+        // Background selon sanction
+        card.style.background = "#ffffff";
+        if(emp.sanction==="Avertissement 1") card.style.background="linear-gradient(145deg,#FFD700,#FFC107)";
+        if(emp.sanction==="Avertissement 2") card.style.background="linear-gradient(145deg,#FF8C00,#FF7F50)";
+        if(emp.sanction==="Licenciement") card.style.background="linear-gradient(145deg,#FF3333,#CC0000)";
+
+        // Pulse
+        if(["Avertissement 1","Avertissement 2","Licenciement"].includes(emp.sanction) && !hasPulse){
+          card.classList.add("pulse");
+        }
+        if(!["Avertissement 1","Avertissement 2","Licenciement"].includes(emp.sanction)){
+          card.classList.remove("pulse");
+        }
+      } else {
+        // Si la carte n'existe pas encore (nouvel employé), la créer
+        const list = document.getElementById("employee-list");
+        const newCard = document.createElement("div");
+        newCard.className = "employee-card";
+        newCard.setAttribute("data-id", emp.id);
+
+        // Background
+        if(emp.sanction==="Avertissement 1") { newCard.style.background="linear-gradient(145deg,#FFD700,#FFC107)"; newCard.classList.add("pulse"); }
+        if(emp.sanction==="Avertissement 2") { newCard.style.background="linear-gradient(145deg,#FF8C00,#FF7F50)"; newCard.classList.add("pulse"); }
+        if(emp.sanction==="Licenciement") { newCard.style.background="linear-gradient(145deg,#FF3333,#CC0000)"; newCard.classList.add("pulse"); }
+
+        newCard.innerHTML = `
+          <div class="employee-name">${emp.nom}</div>
+          <div class="employee-grade">${emp.grade}</div>
+        `;
+
+        newCard.addEventListener("click", ()=>showDetails(filteredEmployees.findIndex(e => e.id===emp.id)));
+        list.appendChild(newCard);
+      }
+    });
+
+  } catch(err){
+    console.error("Erreur lors du rafraîchissement des employés:", err);
+  }
+}
+
+// === Lancer le rafraîchissement toutes les X secondes (ex: 10s) ===
+setInterval(refreshEmployeesLive, 1000);
 
 
 loadEmployees();
@@ -542,23 +728,49 @@ body.dark-mode .diplome-btn:hover {
 /* === Notifications visuelles (toast) === */
 .toast {
   position: fixed;
-  bottom: 30px;
-  right: 30px;
-  background: #333;
+  bottom: 20px;
+  right: 20px;
+  background: #222;
   color: #fff;
-  padding: 12px 18px;
-  border-radius: 10px;
-  font-size: 0.95rem;
-  box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+  padding: 12px 16px;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 15px;
   opacity: 0;
-  transform: translateY(30px);
+  transform: translateY(20px);
   transition: all 0.4s ease;
-  z-index: 99999;
+  z-index: 9999;
 }
 .toast.visible {
   opacity: 1;
   transform: translateY(0);
 }
+.toast.success {
+  background: #16a34a; /* vert */
+}
+.toast.error {
+  background: #dc2626; /* rouge */
+}
+.toast.loading {
+  background: #2563eb; /* bleu */
+}
+
+/* Petit spinner animé */
+.spinner {
+  width: 18px;
+  height: 18px;
+  border: 2px solid rgba(255,255,255,0.3);
+  border-top-color: #fff;
+  border-radius: 50%;
+  animation: spin 0.9s linear infinite;
+}
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
 
 /* Variantes selon le type */
 .toast.success { background: linear-gradient(135deg, #4CAF50, #45a049); }
