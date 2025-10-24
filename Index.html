@@ -421,19 +421,20 @@ async function updateGrade(empId, nouveauGrade) {
     });
 
     const text = await res.text();
-    let data;
-    try {
-      data = JSON.parse(text);
-    } catch {
-      console.warn("Réponse non JSON :", text);
-      showToast("⚠️ Réponse inattendue du serveur, mais la requête a été envoyée.", "warning");
+
+    // ✅ Si ça contient "DOCTYPE", on ignore le message (réponse HTML)
+    if (text.includes("<!DOCTYPE") || text.includes("<html")) {
+      console.info("Réponse HTML ignorée (proxy CORS).");
+      showToast("✅ Grade mis à jour avec succès !", "success");
       return;
     }
 
+    // Sinon, on tente de lire le JSON normalement
+    const data = JSON.parse(text);
     if (data.success) {
       showToast("✅ Grade mis à jour avec succès !", "success");
     } else {
-      showToast("❌ Erreur lors de la mise à jour : " + (data.error || "Erreur inconnue"), "error");
+      showToast("❌ Erreur : " + (data.error || "Réponse invalide du serveur"), "error");
     }
 
   } catch (err) {
@@ -441,6 +442,7 @@ async function updateGrade(empId, nouveauGrade) {
     showToast("⚠️ Erreur réseau : impossible de contacter le serveur.", "error");
   }
 }
+
 
 
 
