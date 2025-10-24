@@ -409,12 +409,12 @@ function showToast(message, type = "info") {
   }, 3000);
 }
 
-// === Mettre à jour le grade dans Google Sheets ===
 async function updateGrade(empId, nouveauGrade) {
   const url = "https://script.google.com/macros/s/AKfycbx8UcKzySSIaXfkXCBFGz3Dj90lmJ2qZ-W5aiMLWy2dEU7gAXzvX-NOZ1hzGkLbVFwt/exec";
+  const proxy = "https://corsproxy.io/?";
 
   try {
-    const res = await fetch(url, {
+    const res = await fetch(proxy + encodeURIComponent(url), {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ id: empId, grade: nouveauGrade })
@@ -441,6 +441,7 @@ async function updateGrade(empId, nouveauGrade) {
     showToast("⚠️ Erreur réseau : impossible de contacter le serveur.", "error");
   }
 }
+
 
 
 loadEmployees();
