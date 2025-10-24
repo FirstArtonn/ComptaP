@@ -392,26 +392,53 @@ function openDiplomePopup(url){
   document.body.appendChild(popup);
 }
 
+// === Affichage d'une notification visuelle ===
+function showToast(message, type = "info") {
+  const toast = document.createElement("div");
+  toast.className = `toast ${type}`;
+  toast.textContent = message;
+  document.body.appendChild(toast);
+
+  // Animation d'apparition
+  setTimeout(() => toast.classList.add("visible"), 50);
+
+  // Disparition après 3 secondes
+  setTimeout(() => {
+    toast.classList.remove("visible");
+    setTimeout(() => toast.remove(), 400);
+  }, 3000);
+}
+
 // === Mettre à jour le grade dans Google Sheets ===
 async function updateGrade(empId, nouveauGrade) {
-  const url = "https://script.google.com/macros/s/AKfycbx8UcKzySSIaXfkXCBFGz3Dj90lmJ2qZ-W5aiMLWy2dEU7gAXzvX-NOZ1hzGkLbVFwt/exec"; // 🔗 remplace par ton URL si besoin
+  const url = "https://script.google.com/macros/s/AKfycbx8UcKzySSIaXfkXCBFGz3Dj90lmJ2qZ-W5aiMLWy2dEU7gAXzvX-NOZ1hzGkLbVFwt/exec";
 
   try {
-const proxy = "https://corsproxy.io/?";
-const res = await fetch(proxy + encodeURIComponent(url), {
-  method: "POST",
-  headers: { "Content-Type": "application/json" },
-  body: JSON.stringify({ id: empId, grade: nouveauGrade })
-});
+    const res = await fetch(url, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ id: empId, grade: nouveauGrade })
+    });
 
-    const data = await res.json();
-    if (data.success) {
-      alert("✅ Le grade a été mis à jour avec succès !");
-    } else {
-      alert("❌ Erreur : " + data.error);
+    const text = await res.text();
+    let data;
+    try {
+      data = JSON.parse(text);
+    } catch {
+      console.warn("Réponse non JSON :", text);
+      showToast("⚠️ Réponse inattendue du serveur, mais la requête a été envoyée.", "warning");
+      return;
     }
+
+    if (data.success) {
+      showToast("✅ Grade mis à jour avec succès !", "success");
+    } else {
+      showToast("❌ Erreur lors de la mise à jour : " + (data.error || "Erreur inconnue"), "error");
+    }
+
   } catch (err) {
-    alert("⚠️ Erreur réseau : " + err.message);
+    console.error("Erreur réseau :", err);
+    showToast("⚠️ Erreur réseau : impossible de contacter le serveur.", "error");
   }
 }
 
@@ -495,6 +522,39 @@ body.dark-mode .diplome-btn:hover {
 }
 .popup-close:hover {color:#667eea;}
 @keyframes fadeIn {from{opacity:0}to{opacity:1}}
+
+/* === Notifications visuelles (toast) === */
+.toast {
+  position: fixed;
+  bottom: 30px;
+  right: 30px;
+  background: #333;
+  color: #fff;
+  padding: 12px 18px;
+  border-radius: 10px;
+  font-size: 0.95rem;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+  opacity: 0;
+  transform: translateY(30px);
+  transition: all 0.4s ease;
+  z-index: 99999;
+}
+.toast.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Variantes selon le type */
+.toast.success { background: linear-gradient(135deg, #4CAF50, #45a049); }
+.toast.error { background: linear-gradient(135deg, #e53935, #c62828); }
+.toast.warning { background: linear-gradient(135deg, #ff9800, #f57c00); }
+.toast.info { background: linear-gradient(135deg, #3f51b5, #5c6bc0); }
+
+body.dark-mode .toast {
+  color: #fff;
+  box-shadow: 0 4px 15px rgba(255,255,255,0.1);
+}
+
 </style>
 </body>
 </html>
