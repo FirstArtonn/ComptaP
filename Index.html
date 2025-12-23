@@ -171,7 +171,7 @@ header p {
 
 /* ==================== LOGIN PAGE ==================== */
 .login-container {
-  display: none;
+  display: flex;
   position: fixed;
   top: 0;
   left: 0;
@@ -179,7 +179,6 @@ header p {
   bottom: 0;
   background: var(--bg-light);
   z-index: 2000;
-  display: flex;
   justify-content: center;
   align-items: center;
   flex-direction: column;
@@ -864,17 +863,18 @@ select:focus {
 
 // ==================== CONFIGURATION ====================
 const CONFIG = {
-  // Discord OAuth2
-  DISCORD_CLIENT_ID: "comptap-production.up.railway.app", // À REMPLACER
-  DISCORD_REDIRECT_URI: window.location.origin + window.location.pathname,
-  DISCORD_SCOPE: "identify guilds guilds.members.read",
-  DISCORD_GUILD_ID: "978302300445614120", // À REMPLACER
+  // Backend Railway - ✅ CORRIGÉ
+  BACKEND_URL: "https://comptap-production.up.railway.app",
   
-  // Rôles Discord (IDs à remplacer par vos vrais IDs de rôles)
+  // Discord OAuth2 - ✅ CORRIGÉ
+  DISCORD_CLIENT_ID: "1452799198398517331",
+  DISCORD_GUILD_ID: "978302300445614120",
+  
+  // Rôles Discord - ✅ VOS RÔLES
   ROLES: {
-    ADMIN: ["978302300466581508", "978302300466581507"], // Patron, Co-Patron
-    RH: ["1214991274311032877", "1426932223722131606"], // DRH, RH
-    EMPLOYEE: ["1358963448146296843"] // Tous les employés
+    ADMIN: ["978302300466581508", "978302300466581507"],
+    RH: ["1214991274311032877", "1426932223722131606"],
+    EMPLOYEE: ["1358963448146296843"]
   },
   
   // Google Sheets
@@ -905,14 +905,16 @@ const STATE = {
 // ==================== AUTHENTIFICATION DISCORD ====================
 const Auth = {
   init() {
-    // Vérifier si on revient de Discord OAuth
     const params = new URLSearchParams(window.location.search);
-    const code = params.get('code');
+    const authStatus = params.get('auth');
+    const error = params.get('error');
     
-    if (code) {
-      this.handleCallback(code);
+    if (authStatus === 'success') {
+      this.checkAuth();
+      window.history.replaceState({}, document.title, window.location.pathname);
+    } else if (error) {
+      this.handleError(error);
     } else {
-      // Vérifier si déjà connecté
       const savedUser = this.loadUser();
       if (savedUser) {
         this.setUser(savedUser);
@@ -922,104 +924,47 @@ const Auth = {
     }
   },
 
-loginWithDiscord() {
-  // Rediriger vers le backend au lieu de Discord directement
-  window.location.href = `${CONFIG.BACKEND_URL}/auth/discord`;
-},
+  loginWithDiscord() {
+    window.location.href = `${CONFIG.BACKEND_URL}/auth/discord`;
+  },
 
-  async handleCallback(code) {
+  async checkAuth() {
     try {
-      Utils.showToast('⏳ Connexion en cours...', 'loading');
+      const response = await fetch(`${CONFIG.BACKEND_URL}/api/check-auth`, {
+        credentials: 'include'
+      });
       
-      // NOTE: Pour la sécurité, cette partie devrait être faite côté serveur
-      // Voici une version simplifiée pour démonstration
+      const data = await response.json();
       
-      // Échanger le code contre un token (NÉCESSITE UN BACKEND)
-      // const tokenResponse = await fetch('https://discord.com/api/oauth2/token', {...});
-      
-      // Pour la démo, on simule une connexion réussie
-      const mockUser = {
-        id: '123456789',
-        username: 'Demo User',
-        discriminator: '1234',
-        avatar: 'https://cdn.discordapp.com/embed/avatars/0.png',
-        roles: CONFIG.ROLES.ADMIN, // Simuler un admin
-        guild_member: true
-      };
-      
-      // Retirer le code de l'URL
-      window.history.replaceState({}, document.title, window.location.pathname);
-      
-      this.setUser(mockUser);
-      Utils.showToast('✅ Connexion réussie !', 'success');
-      
+      if (data.authenticated) {
+        this.setUser(data.user);
+      } else {
+        this.showLogin();
+      }
     } catch (error) {
-      Utils.log('❌', 'Erreur auth:', error);
-      Utils.showToast('❌ Erreur de connexion', 'error');
+      console.error('Erreur vérification auth:', error);
       this.showLogin();
     }
   },
 
-  async getUserInfo(token) {
-    // Récupérer les infos utilisateur Discord
-    const userResponse = await fetch('https://discord.com/api/users/@me', {
-      headers: { 'Authorization': `Bearer ${token}` }
-    });
-    const user = await userResponse.json();
-
-    // Récupérer les guilds de l'utilisateur
-    const guildsResponse = await fetch('https://discord.com/api/users/@me/guilds', {
-      headers: { 'Authorization': `Bearer ${token}` }
-    });
-    const guilds = await guildsResponse.json();
-
-    // Vérifier que l'utilisateur est dans le bon serveur
-    const inGuild = guilds.some(g => g.id === CONFIG.DISCORD_GUILD_ID);
-    if (!inGuild) {
-      throw new Error('Vous devez être membre du serveur Discord Paleto Garage');
-    }
-
-    // Récupérer les rôles (nécessite un appel serveur avec bot token)
-    // Pour la démo, on simule
-    user.roles = this.determineRole(user);
-    user.guild_member = true;
-
-    return user;
-  },
-
-  determineRole(user) {
-    // Cette fonction devrait vérifier les vrais rôles Discord
-    // Pour la démo, on assigne admin
-    return 'admin';
+  handleError(error) {
+    const errors = {
+      'no_code': 'Code d\'autorisation manquant',
+      'not_in_guild': 'Vous devez être membre du serveur Discord Paleto Garage',
+      'auth_failed': 'Échec de l\'authentification',
+      'session_error': 'Erreur de création de session'
+    };
+    
+    Utils.showToast(`❌ ${errors[error] || 'Erreur inconnue'}`, 'error');
+    this.showLogin();
   },
 
   setUser(user) {
     STATE.user = user;
-    STATE.userRole = this.getUserRole(user);
-    
-    // Sauvegarder en localStorage
+    STATE.userRole = user.role;
     this.saveUser(user);
-    
-    // Afficher l'interface
     this.showApp();
-    
-    // Charger les données
     App.init();
-  },
-
-  getUserRole(user) {
-    // Déterminer le rôle basé sur les rôles Discord
-    const userRoleIds = user.roles;
-    
-    if (CONFIG.ROLES.ADMIN.some(roleId => userRoleIds.includes(roleId))) {
-      return 'admin';
-    } else if (CONFIG.ROLES.RH.some(roleId => userRoleIds.includes(roleId))) {
-      return 'rh';
-    } else if (CONFIG.ROLES.EMPLOYEE.some(roleId => userRoleIds.includes(roleId))) {
-      return 'employee';
-    }
-    
-    return 'visitor';
   },
 
   showLogin() {
@@ -1033,14 +978,12 @@ loginWithDiscord() {
     document.getElementById('main-header').style.display = 'block';
     document.getElementById('tab-contents').style.display = 'block';
     
-    // Afficher les infos utilisateur
     const user = STATE.user;
     document.getElementById('user-avatar').src = user.avatar;
     document.getElementById('user-name').textContent = `${user.username}#${user.discriminator}`;
     document.getElementById('user-profile').style.display = 'flex';
     document.getElementById('welcome-name').textContent = user.username;
     
-    // Afficher les permissions
     const permissions = {
       'admin': 'Administrateur - Accès complet',
       'rh': 'Ressources Humaines - Accès aux employés et recrutement',
@@ -1049,19 +992,28 @@ loginWithDiscord() {
     };
     document.getElementById('user-permissions').textContent = permissions[STATE.userRole] || 'Aucune permission';
     
-    // Ajouter la classe de rôle au body
     document.body.className = `role-${STATE.userRole}`;
     if (Utils.loadDarkMode()) {
       document.body.classList.add('dark-mode');
     }
   },
 
-  logout() {
-    localStorage.removeItem('discord_user');
-    STATE.user = null;
-    STATE.userRole = null;
-    this.showLogin();
-    Utils.showToast('👋 Déconnexion réussie', 'success');
+  async logout() {
+    try {
+      await fetch(`${CONFIG.BACKEND_URL}/api/logout`, {
+        method: 'POST',
+        credentials: 'include'
+      });
+      
+      localStorage.removeItem('discord_user');
+      STATE.user = null;
+      STATE.userRole = null;
+      this.showLogin();
+      Utils.showToast('👋 Déconnexion réussie', 'success');
+    } catch (error) {
+      console.error('Erreur déconnexion:', error);
+      Utils.showToast('❌ Erreur de déconnexion', 'error');
+    }
   },
 
   saveUser(user) {
@@ -1320,7 +1272,6 @@ const Employees = {
       }
     }
 
-    // Afficher le sélecteur de grade uniquement si admin/RH
     let gradeHTML;
     if (Auth.hasPermission('rh')) {
       gradeHTML = `
@@ -1725,4 +1676,3 @@ document.addEventListener('DOMContentLoaded', () => {
 
 </body>
 </html>
-
