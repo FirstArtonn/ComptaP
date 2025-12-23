@@ -865,7 +865,7 @@ select:focus {
 // ==================== CONFIGURATION ====================
 const CONFIG = {
   // Discord OAuth2
-  DISCORD_CLIENT_ID: "1452799198398517331", // À REMPLACER
+  DISCORD_CLIENT_ID: "comptap-production.up.railway.app", // À REMPLACER
   DISCORD_REDIRECT_URI: window.location.origin + window.location.pathname,
   DISCORD_SCOPE: "identify guilds guilds.members.read",
   DISCORD_GUILD_ID: "978302300445614120", // À REMPLACER
@@ -922,10 +922,10 @@ const Auth = {
     }
   },
 
-  loginWithDiscord() {
-    const authUrl = `https://discord.com/api/oauth2/authorize?client_id=${CONFIG.DISCORD_CLIENT_ID}&redirect_uri=${encodeURIComponent(CONFIG.DISCORD_REDIRECT_URI)}&response_type=code&scope=${encodeURIComponent(CONFIG.DISCORD_SCOPE)}`;
-    window.location.href = authUrl;
-  },
+loginWithDiscord() {
+  // Rediriger vers le backend au lieu de Discord directement
+  window.location.href = `${CONFIG.BACKEND_URL}/auth/discord`;
+},
 
   async handleCallback(code) {
     try {
@@ -1725,3 +1725,4 @@ document.addEventListener('DOMContentLoaded', () => {
 
 </body>
 </html>
+
