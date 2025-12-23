@@ -37,13 +37,16 @@ app.use(express.urlencoded({ extended: true }));
 
 // Session avec secret sécurisé
 app.use(session({
-  secret: process.env.SESSION_SECRET || 'votre-secret-super-securise-a-changer',
+  secret: process.env.SESSION_SECRET || 'secret-a-changer',
   resave: false,
   saveUninitialized: false,
+  proxy: true, // ← AJOUTEZ CECI
   cookie: {
-    secure: process.env.NODE_ENV === 'production', // HTTPS en production
+    secure: true, // ← FORCEZ true au lieu de vérifier NODE_ENV
     httpOnly: true,
-    maxAge: 24 * 60 * 60 * 1000 // 24 heures
+    maxAge: 24 * 60 * 60 * 1000,
+    sameSite: 'none', // ← Laissez 'none'
+    domain: '.railway.app' // ← AJOUTEZ CECI
   }
 }));
 
