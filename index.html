@@ -6,8 +6,6 @@
 <title>🎓 Fiches Employés - Paleto Garage</title>
 <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
 <style>
-/* ==================== VARIABLES CSS ==================== */
-
 :root {
   --primary-gradient: linear-gradient(135deg, #667eea, #764ba2);
   --secondary-gradient: linear-gradient(135deg, #8b80ff, #b48ef7);
@@ -23,9 +21,7 @@
   --discord-blue: #5865F2;
 }
 
-/* ==================== BASE ==================== */
 * { box-sizing: border-box; }
-
 html { overflow-x: hidden; }
 
 body {
@@ -38,7 +34,6 @@ body {
   padding-top: var(--header-height);
 }
 
-/* ==================== MODE SOMBRE ==================== */
 body.dark-mode {
   background: var(--bg-dark);
   color: var(--text-dark);
@@ -47,44 +42,20 @@ body.dark-mode {
 body.dark-mode header { background: linear-gradient(135deg, #2c2c54, #3c3c8a); }
 body.dark-mode .nav-item { color: #ccc; }
 body.dark-mode .nav-item.active::after { background: #a6a6ff; }
-body.dark-mode input,
-body.dark-mode select {
+body.dark-mode input, body.dark-mode select {
   background: var(--card-dark);
   color: #fff;
   border-color: #444;
 }
 body.dark-mode input::placeholder { color: #aaa; }
-body.dark-mode .employee-card,
-body.dark-mode .recruit-card { 
+body.dark-mode .employee-card, body.dark-mode .recruit-card { 
   background: var(--card-dark); 
   color: var(--text-dark); 
-}
-body.dark-mode #employee-details,
-body.dark-mode #recruit-details {
-  background: var(--card-dark);
-  color: var(--text-dark);
-  border-top-color: #8b80ff;
-}
-body.dark-mode td { border-bottom-color: rgba(255,255,255,0.1); }
-body.dark-mode td:first-child { color: #ddd; }
-body.dark-mode .grade-wrapper button {
-  background: rgba(255,255,255,0.08);
-  color: #eaeaff;
-  border-color: rgba(255,255,255,0.15);
-}
-body.dark-mode .grade-wrapper ul {
-  background: rgba(255,255,255,0.08);
-}
-body.dark-mode .diplome-btn {
-  background: rgba(255,255,255,0.08);
-  border-color: rgba(255,255,255,0.15);
-  color: #eee;
 }
 body.dark-mode .login-container {
   background: var(--card-dark);
 }
 
-/* ==================== HEADER ==================== */
 header {
   position: fixed;
   top: 0;
@@ -122,7 +93,6 @@ header p {
 }
 #moon.rotate { transform: rotate(360deg); }
 
-/* Bouton User Profile */
 #user-profile {
   position: absolute;
   top: 20px;
@@ -170,7 +140,6 @@ header p {
   background: rgba(255,255,255,0.2);
 }
 
-/* ==================== LOGIN PAGE ==================== */
 .login-container {
   display: flex;
   position: fixed;
@@ -265,7 +234,6 @@ body.dark-mode .login-info {
   color: #bbb;
 }
 
-/* ==================== NAVIGATION ==================== */
 #main-nav {
   display: flex;
   justify-content: center;
@@ -301,7 +269,6 @@ body.dark-mode .login-info {
 
 .nav-item.active::after { width: 100%; }
 
-/* Cacher les onglets selon permissions */
 .nav-item.admin-only,
 .nav-item.rh-only {
   display: none;
@@ -313,7 +280,6 @@ body.role-rh .nav-item.rh-only {
   display: block;
 }
 
-/* ==================== TABS ==================== */
 .tab {
   display: none;
   opacity: 0;
@@ -327,7 +293,6 @@ body.role-rh .nav-item.rh-only {
   transform: translateY(0);
 }
 
-/* ==================== BARRE DE RECHERCHE ==================== */
 #search-container,
 #search-container-recrutement {
   margin: 30px auto 10px;
@@ -351,7 +316,6 @@ body.role-rh .nav-item.rh-only {
   box-shadow: 0 0 10px rgba(118,75,162,0.4);
 }
 
-/* ==================== CARTES EMPLOYÉS/RECRUTEMENT ==================== */
 #employee-list,
 #recruitment-list {
   display: flex;
@@ -395,240 +359,6 @@ body.role-rh .nav-item.rh-only {
 
 body.dark-mode .employee-grade { color: #bbb; }
 
-/* ==================== ANIMATIONS ==================== */
-@keyframes pulse {
-  0%, 100% { 
-    transform: scale(1); 
-    box-shadow: 0 5px 15px rgba(0,0,0,0.07); 
-  }
-  50% { 
-    transform: scale(1.05); 
-    box-shadow: 0 12px 25px rgba(0,0,0,0.15); 
-  }
-}
-
-.employee-card.pulse,
-.recruit-card.pulse { 
-  animation: pulse 1.5s infinite; 
-}
-
-@keyframes fadeIn {
-  from { opacity: 0; }
-  to { opacity: 1; }
-}
-
-@keyframes spin {
-  to { transform: rotate(360deg); }
-}
-
-/* ==================== DÉTAILS ==================== */
-#employee-details,
-#recruit-details {
-  display: none;
-  background: var(--card-light);
-  color: var(--text-light);
-  padding: 25px 30px;
-  border-radius: 25px;
-  max-width: 720px;
-  margin: 40px auto;
-  box-shadow: 0 15px 30px rgba(0,0,0,0.08);
-  border-top: 6px solid #667eea;
-  position: relative;
-}
-
-.close-btn {
-  position: absolute;
-  top: 15px;
-  right: 20px;
-  font-size: 1.5rem;
-  font-weight: bold;
-  color: #667eea;
-  cursor: pointer;
-  transition: var(--transition);
-  user-select: none;
-}
-
-.close-btn:hover { color: #764ba2; }
-
-table { 
-  width: 100%; 
-  border-collapse: collapse; 
-  margin-top: 20px; 
-}
-
-td { 
-  padding: 10px; 
-  border-bottom: 1px solid rgba(0,0,0,0.08); 
-  vertical-align: top;
-}
-
-td:first-child { 
-  font-weight: 600; 
-  color: var(--text-light); 
-  width: 35%;
-}
-
-/* ==================== SÉLECTEUR DE GRADE ==================== */
-.grade-wrapper {
-  position: relative;
-  display: inline-block;
-  width: 100%;
-  max-width: 220px;
-}
-
-.grade-wrapper button {
-  width: 100%;
-  padding: 12px 20px;
-  font-size: 1rem;
-  font-weight: 600;
-  color: #2b3a67;
-  background: rgba(255,255,255,0.15);
-  backdrop-filter: blur(8px);
-  border: 1px solid rgba(255,255,255,0.25);
-  border-radius: 12px;
-  cursor: pointer;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  transition: var(--transition);
-  box-shadow: 0 4px 12px rgba(0,0,0,0.12);
-}
-
-.grade-wrapper button:hover {
-  background: var(--secondary-gradient);
-  color: #fff;
-  box-shadow: 0 8px 20px rgba(118,75,162,0.25);
-}
-
-.grade-wrapper button::after {
-  content: '▼';
-  font-size: 0.8rem;
-  color: #667eea;
-  transition: transform 0.3s ease;
-}
-
-.grade-wrapper.open button::after {
-  transform: rotate(180deg);
-}
-
-.grade-wrapper ul {
-  position: absolute;
-  top: calc(100% + 5px);
-  left: 0;
-  width: 100%;
-  background: rgba(255,255,255,0.95);
-  backdrop-filter: blur(8px);
-  border-radius: 12px;
-  box-shadow: 0 8px 20px rgba(0,0,0,0.15);
-  list-style: none;
-  padding: 0;
-  margin: 0;
-  max-height: 0;
-  overflow: hidden;
-  transition: max-height 0.3s ease, opacity 0.3s ease;
-  opacity: 0;
-  z-index: 10;
-}
-
-.grade-wrapper.open ul {
-  max-height: 500px;
-  opacity: 1;
-}
-
-.grade-wrapper ul li {
-  padding: 12px 20px;
-  cursor: pointer;
-  transition: var(--transition);
-}
-
-.grade-wrapper ul li:hover {
-  background: var(--secondary-gradient);
-  color: white;
-}
-
-/* ==================== BOUTONS DIPLÔME ==================== */
-.diplome-btn {
-  background: rgba(255, 255, 255, 0.15);
-  backdrop-filter: blur(8px);
-  border: 1px solid rgba(255, 255, 255, 0.25);
-  border-radius: 10px;
-  padding: 8px 16px;
-  margin: 6px 4px;
-  font-weight: 500;
-  cursor: pointer;
-  transition: var(--transition);
-  font-size: 0.95rem;
-  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.15);
-  display: inline-block;
-}
-
-.diplome-btn:hover {
-  transform: translateY(-2px);
-  background: var(--secondary-gradient);
-  color: white;
-  box-shadow: 0 8px 20px rgba(118, 75, 162, 0.3);
-}
-
-/* ==================== POPUP DIPLÔME ==================== */
-.diplome-popup {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: rgba(0,0,0,0.7);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  z-index: 9999;
-  animation: fadeIn 0.3s ease;
-}
-
-.popup-content {
-  background: #fff;
-  border-radius: 15px;
-  padding: 0;
-  width: 90%;
-  max-width: 800px;
-  height: 80%;
-  box-shadow: 0 10px 25px rgba(0,0,0,0.4);
-  position: relative;
-  overflow: hidden;
-}
-
-.popup-content iframe {
-  width: 100%;
-  height: 100%;
-  border: none;
-  border-radius: 15px;
-}
-
-.popup-close {
-  position: absolute;
-  top: 10px;
-  right: 15px;
-  font-size: 1.8rem;
-  cursor: pointer;
-  color: #fff;
-  background: rgba(0,0,0,0.5);
-  border-radius: 50%;
-  width: 40px;
-  height: 40px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: var(--transition);
-  z-index: 10000;
-  backdrop-filter: blur(5px);
-  user-select: none;
-}
-
-.popup-close:hover {
-  background: rgba(0,0,0,0.7);
-  transform: rotate(90deg);
-}
-
-/* ==================== TOAST NOTIFICATIONS ==================== */
 .toast {
   position: fixed;
   bottom: 20px;
@@ -656,19 +386,7 @@ td:first-child {
 
 .toast.success { background: linear-gradient(135deg, #4CAF50, #45a049); }
 .toast.error { background: linear-gradient(135deg, #e53935, #c62828); }
-.toast.loading { background: linear-gradient(135deg, #2563eb, #1e40af); }
-.toast.warning { background: linear-gradient(135deg, #ff9800, #f57c00); }
 
-.spinner {
-  width: 18px;
-  height: 18px;
-  border: 2px solid rgba(255,255,255,0.3);
-  border-top-color: #fff;
-  border-radius: 50%;
-  animation: spin 0.9s linear infinite;
-}
-
-/* ==================== MESSAGES INFO ==================== */
 .info-message {
   text-align: center;
   padding: 40px 20px;
@@ -676,110 +394,41 @@ td:first-child {
   color: #667eea;
 }
 
-/* ==================== SELECT CUSTOM ==================== */
-select {
-  padding: 8px 12px;
-  border-radius: 8px;
-  border: 2px solid #667eea;
-  font-size: 1rem;
-  cursor: pointer;
-  transition: var(--transition);
-  background: white;
-}
-
-select:focus {
-  outline: none;
-  border-color: #764ba2;
-  box-shadow: 0 0 8px rgba(118,75,162,0.3);
-}
-
-/* ==================== RESPONSIVE ==================== */
 @media (max-width: 768px) {
   :root { --header-height: 220px; }
-  
   header h1 { font-size: 1.8rem; }
-  
   #main-nav { gap: 20px; }
-  
   #user-profile {
     position: static;
     margin: 15px auto 0;
     width: fit-content;
   }
-  
   #moon {
     right: 15px;
   }
-  
   .employee-card,
   .recruit-card { width: calc(50% - 15px); }
-  
-  #employee-details,
-  #recruit-details { 
-    width: 95%; 
-    margin: 20px auto;
-    padding: 20px;
-  }
-  
-  td:first-child { width: 40%; }
-  
-  .login-card {
-    padding: 40px 30px;
-  }
 }
 
 @media (max-width: 480px) {
   .employee-card,
   .recruit-card { width: 90%; }
-  
   .toast {
     right: 10px;
     left: 10px;
     max-width: none;
   }
 }
-
-/* ==================== LOADING STATE ==================== */
-.loading {
-  display: inline-block;
-  width: 20px;
-  height: 20px;
-  border: 3px solid rgba(102, 126, 234, 0.3);
-  border-top-color: #667eea;
-  border-radius: 50%;
-  animation: spin 0.8s linear infinite;
-}
-
-/* ==================== ACCESS DENIED ==================== */
-.access-denied {
-  text-align: center;
-  padding: 60px 20px;
-  max-width: 500px;
-  margin: 40px auto;
-}
-
-.access-denied h2 {
-  font-size: 2rem;
-  color: #ff6b6b;
-  margin-bottom: 20px;
-}
-
-.access-denied p {
-  color: #666;
-  font-size: 1.1rem;
-  line-height: 1.6;
-}
 </style>
 </head>
 <body>
 
-<!-- ==================== LOGIN PAGE ==================== -->
 <div class="login-container" id="login-container">
   <div class="login-card">
     <h1>🔥 Paleto Garage</h1>
     <p>Connectez-vous avec Discord pour accéder au système de gestion</p>
     
-    <button class="discord-login-btn" onclick="Auth.loginWithDiscord()">
+    <button class="discord-login-btn" onclick="loginWithDiscord()">
       <svg viewBox="0 0 127.14 96.36" fill="currentColor">
         <path d="M107.7,8.07A105.15,105.15,0,0,0,81.47,0a72.06,72.06,0,0,0-3.36,6.83A97.68,97.68,0,0,0,49,6.83,72.37,72.37,0,0,0,45.64,0,105.89,105.89,0,0,0,19.39,8.09C2.79,32.65-1.71,56.6.54,80.21h0A105.73,105.73,0,0,0,32.71,96.36,77.7,77.7,0,0,0,39.6,85.25a68.42,68.42,0,0,1-10.85-5.18c.91-.66,1.8-1.34,2.66-2a75.57,75.57,0,0,0,64.32,0c.87.71,1.76,1.39,2.66,2a68.68,68.68,0,0,1-10.87,5.19,77,77,0,0,0,6.89,11.1A105.25,105.25,0,0,0,126.6,80.22h0C129.24,52.84,122.09,29.11,107.7,8.07ZM42.45,65.69C36.18,65.69,31,60,31,53s5-12.74,11.43-12.74S54,46,53.89,53,48.84,65.69,42.45,65.69Zm42.24,0C78.41,65.69,73.25,60,73.25,53s5-12.74,11.44-12.74S96.23,46,96.12,53,91.08,65.69,84.69,65.69Z"/>
       </svg>
@@ -788,13 +437,11 @@ select:focus {
 
     <div class="login-info">
       <strong>ℹ️ Information</strong><br>
-      Vous devez être membre du serveur Discord Paleto Garage pour accéder à cette application.
-      Les permissions sont basées sur vos rôles Discord.
+      Votre ID Discord doit être dans la liste des employés du Google Sheet pour accéder à cette application.
     </div>
   </div>
 </div>
 
-<!-- ==================== HEADER ==================== -->
 <header id="main-header" style="display: none;">
   <h1>🔥 Paleto Garage</h1>
   <p>Ce site est soumis à des droits d'auteur, By Artonn</p>
@@ -802,22 +449,20 @@ select:focus {
   <div id="user-profile" style="display: none;">
     <img id="user-avatar" src="" alt="Avatar">
     <span class="username" id="user-name"></span>
-    <button id="logout-btn" onclick="Auth.logout()">Déconnexion</button>
+    <button id="logout-btn" onclick="logout()">Déconnexion</button>
   </div>
   
-  <div id="moon" title="Basculer mode sombre">🌙</div>
+  <div id="moon" title="Basculer mode sombre" onclick="toggleDarkMode()">🌙</div>
 
   <nav id="main-nav">
-    <div class="nav-item active" data-tab="accueil">Accueil</div>
-    <div class="nav-item" data-tab="employe">Employés</div>
-    <div class="nav-item rh-only" data-tab="recrutement">Recrutement</div>
-    <div class="nav-item admin-only" data-tab="absence">Absence</div>
+    <div class="nav-item active" data-tab="accueil" onclick="switchTab(this)">Accueil</div>
+    <div class="nav-item" data-tab="employe" onclick="switchTab(this)">Employés</div>
+    <div class="nav-item rh-only" data-tab="recrutement" onclick="switchTab(this)">Recrutement</div>
+    <div class="nav-item admin-only" data-tab="absence" onclick="switchTab(this)">Absence</div>
   </nav>
 </header>
 
-<!-- ==================== CONTENU ==================== -->
 <div id="tab-contents" style="display: none;">
-  <!-- ACCUEIL -->
   <div class="tab active" id="tab-accueil">
     <div style="text-align:center; margin-top:40px; padding: 20px;">
       <h2>👋 Bienvenue <span id="welcome-name"></span></h2>
@@ -831,25 +476,20 @@ select:focus {
     </div>
   </div>
 
-  <!-- EMPLOYÉS -->
   <div class="tab" id="tab-employe">
     <div id="search-container">
       <input type="text" id="search-bar" placeholder="🔍 Rechercher un employé...">
     </div>
     <div id="employee-list"></div>
-    <div id="employee-details"></div>
   </div>
 
-  <!-- RECRUTEMENT -->
   <div class="tab" id="tab-recrutement">
     <div id="search-container-recrutement">
       <input type="text" id="search-bar-recrutement" placeholder="🔍 Rechercher un candidat...">
     </div>
     <div id="recruitment-list"></div>
-    <div id="recruit-details"></div>
   </div>
 
-  <!-- ABSENCE -->
   <div class="tab" id="tab-absence">
     <div style="text-align:center; margin-top:40px; padding: 20px;">
       <h2>📅 Gestion des absences</h2>
@@ -858,824 +498,264 @@ select:focus {
   </div>
 </div>
 
-<!-- ==================== JAVASCRIPT ==================== -->
 <script>
 'use strict';
 
 // ==================== CONFIGURATION ====================
-const CONFIG = {
-  // Backend Railway - ✅ CORRIGÉ
-  BACKEND_URL: "https://comptap-production.up.railway.app",
-  
-  // Discord OAuth2 - ✅ CORRIGÉ
-  DISCORD_CLIENT_ID: "1452799198398517331",
-  DISCORD_GUILD_ID: "914113546219044904",
-  
-  // Rôles Discord - ✅ VOS RÔLES
-  ROLES: {
-    ADMIN: ["914114308026298429", "978302300466581507"],
-    RH: ["1214991274311032877", "1426932223722131606"],
-    EMPLOYEE: ["1358963448146296843"]
-  },
-  
-  // Google Sheets
-  SHEET_ID: "17ZntDHZ8olidnCM1pig311AcjawM4l6HoRxSYFP7KGw",
-  API_KEY: "AIzaSyBtOfa8W5POpJ2KOZSKqxsC4CfZBkYG40E",
-  SHEET_EMPLOYEES: "Info Employé",
-  SHEET_RECRUITMENT: "Formulaire Info ",
-  REFRESH_INTERVAL: 10000,
-  GRADES: [
-    "Patron", "Co Patron", "DRH", "RH", "Responsable D'atelier",
-    "Chef d'atelier", "Confirmé", "Mécano", "Apprenti", "Stagiaire"
-  ],
-  DAYS: ["Lundi", "Mardi", "Mercredi", "Jeudi", "Vendredi", "Samedi", "Dimanche"],
-  SECTIONS_TO_IGNORE: ["DIRECTION", "SOUS-DIRECTION", "HAUT GRADÉ", "APPRENTI / MÉCANO/ CONFIRMÉ / STAGIAIRES"]
-};
+const BACKEND_URL = "https://comptap-production.up.railway.app";
 
-// ==================== ÉTAT GLOBAL ====================
-const STATE = {
-  user: null,
-  userRole: null,
-  allEmployees: [],
-  filteredEmployees: [],
-  allCandidates: [],
-  filteredCandidates: [],
-  currentTab: 'accueil'
-};
+const SHEET_ID = "17ZntDHZ8olidnCM1pig311AcjawM4l6HoRxSYFP7KGw";
+const API_KEY = "AIzaSyBtOfa8W5POpJ2KOZSKqxsC4CfZBkYG40E";
+const SHEET_EMPLOYEES = "Info Employé";
 
-// ==================== AUTHENTIFICATION DISCORD ====================
-const Auth = {
-  init() {
-    const params = new URLSearchParams(window.location.search);
-    const authStatus = params.get('auth');
-    const error = params.get('error');
+let currentUser = null;
+let allEmployees = [];
+let filteredEmployees = [];
+
+// ==================== AUTHENTIFICATION ====================
+
+function loginWithDiscord() {
+  console.log('🔗 Redirection vers Discord via:', BACKEND_URL);
+  window.location.href = `${BACKEND_URL}/auth/discord`;
+}
+
+async function checkAuth() {
+  try {
+    console.log('🔍 Vérification authentification...');
+    const response = await fetch(`${BACKEND_URL}/api/check-auth`, {
+      credentials: 'include'
+    });
     
-    if (authStatus === 'success') {
-      this.checkAuth();
-      window.history.replaceState({}, document.title, window.location.pathname);
-    } else if (error) {
-      this.handleError(error);
+    const data = await response.json();
+    console.log('📥 Réponse auth:', data);
+    
+    if (data.authenticated) {
+      currentUser = data.user;
+      showApp();
     } else {
-      const savedUser = this.loadUser();
-      if (savedUser) {
-        this.setUser(savedUser);
-      } else {
-        this.showLogin();
-      }
+      showLogin();
     }
-  },
-
-  loginWithDiscord() {
-    window.location.href = `${CONFIG.BACKEND_URL}/auth/discord`;
-  },
-
-  async checkAuth() {
-    try {
-      const response = await fetch(`${CONFIG.BACKEND_URL}/api/check-auth`, {
-        credentials: 'include'
-      });
-      
-      const data = await response.json();
-      
-      if (data.authenticated) {
-        this.setUser(data.user);
-      } else {
-        this.showLogin();
-      }
-    } catch (error) {
-      console.error('Erreur vérification auth:', error);
-      this.showLogin();
-    }
-  },
-
-  handleError(error) {
-    const errors = {
-      'no_code': 'Code d\'autorisation manquant',
-      'not_in_guild': 'Vous devez être membre du serveur Discord Paleto Garage',
-      'auth_failed': 'Échec de l\'authentification',
-      'session_error': 'Erreur de création de session'
-    };
-    
-    Utils.showToast(`❌ ${errors[error] || 'Erreur inconnue'}`, 'error');
-    this.showLogin();
-  },
-
-  setUser(user) {
-    STATE.user = user;
-    STATE.userRole = user.role;
-    this.saveUser(user);
-    this.showApp();
-    App.init();
-  },
-
-  showLogin() {
-    document.getElementById('login-container').style.display = 'flex';
-    document.getElementById('main-header').style.display = 'none';
-    document.getElementById('tab-contents').style.display = 'none';
-  },
-
-  showApp() {
-    document.getElementById('login-container').style.display = 'none';
-    document.getElementById('main-header').style.display = 'block';
-    document.getElementById('tab-contents').style.display = 'block';
-    
-    const user = STATE.user;
-    document.getElementById('user-avatar').src = user.avatar;
-    document.getElementById('user-name').textContent = `${user.username}#${user.discriminator}`;
-    document.getElementById('user-profile').style.display = 'flex';
-    document.getElementById('welcome-name').textContent = user.username;
-    
-    const permissions = {
-      'admin': 'Administrateur - Accès complet',
-      'rh': 'Ressources Humaines - Accès aux employés et recrutement',
-      'employee': 'Employé - Consultation uniquement',
-      'visitor': 'Visiteur - Accès limité'
-    };
-    document.getElementById('user-permissions').textContent = permissions[STATE.userRole] || 'Aucune permission';
-    
-    document.body.className = `role-${STATE.userRole}`;
-    if (Utils.loadDarkMode()) {
-      document.body.classList.add('dark-mode');
-    }
-  },
-
-  async logout() {
-    try {
-      await fetch(`${CONFIG.BACKEND_URL}/api/logout`, {
-        method: 'POST',
-        credentials: 'include'
-      });
-      
-      localStorage.removeItem('discord_user');
-      STATE.user = null;
-      STATE.userRole = null;
-      this.showLogin();
-      Utils.showToast('👋 Déconnexion réussie', 'success');
-    } catch (error) {
-      console.error('Erreur déconnexion:', error);
-      Utils.showToast('❌ Erreur de déconnexion', 'error');
-    }
-  },
-
-  saveUser(user) {
-    localStorage.setItem('discord_user', JSON.stringify(user));
-  },
-
-  loadUser() {
-    const saved = localStorage.getItem('discord_user');
-    return saved ? JSON.parse(saved) : null;
-  },
-
-  hasPermission(requiredRole) {
-    const roleHierarchy = { 'admin': 3, 'rh': 2, 'employee': 1, 'visitor': 0 };
-    return roleHierarchy[STATE.userRole] >= roleHierarchy[requiredRole];
+  } catch (error) {
+    console.error('❌ Erreur vérification auth:', error);
+    showLogin();
   }
-};
+}
 
-// ==================== UTILITAIRES ====================
-const Utils = {
-  getSheetUrl(sheetName) {
-    return `https://sheets.googleapis.com/v4/spreadsheets/${CONFIG.SHEET_ID}/values/${encodeURIComponent(sheetName)}?key=${CONFIG.API_KEY}`;
-  },
+async function logout() {
+  try {
+    await fetch(`${BACKEND_URL}/api/logout`, {
+      method: 'POST',
+      credentials: 'include'
+    });
+    
+    currentUser = null;
+    showLogin();
+    showToast('👋 Déconnexion réussie', 'success');
+  } catch (error) {
+    console.error('❌ Erreur déconnexion:', error);
+    showToast('❌ Erreur de déconnexion', 'error');
+  }
+}
 
-  findHeaderIndex(rows, headerKeywords = ["ID Unique", "Prénom / Nom"]) {
+function showLogin() {
+  document.getElementById('login-container').style.display = 'flex';
+  document.getElementById('main-header').style.display = 'none';
+  document.getElementById('tab-contents').style.display = 'none';
+}
+
+function showApp() {
+  document.getElementById('login-container').style.display = 'none';
+  document.getElementById('main-header').style.display = 'block';
+  document.getElementById('tab-contents').style.display = 'block';
+  
+  document.getElementById('user-avatar').src = currentUser.avatar;
+  document.getElementById('user-name').textContent = currentUser.employeeName || currentUser.username;
+  document.getElementById('user-profile').style.display = 'flex';
+  document.getElementById('welcome-name').textContent = currentUser.employeeName || currentUser.username;
+  
+  const permissions = {
+    'admin': 'Administrateur - Accès complet',
+    'rh': 'Ressources Humaines - Accès aux employés et recrutement',
+    'employee': 'Employé - Consultation uniquement',
+    'visitor': 'Visiteur - Accès limité'
+  };
+  document.getElementById('user-permissions').textContent = permissions[currentUser.role] || 'Aucune permission';
+  
+  document.body.className = `role-${currentUser.role}`;
+  
+  loadEmployees();
+}
+
+// ==================== GOOGLE SHEETS ====================
+
+async function loadEmployees() {
+  const list = document.getElementById('employee-list');
+  
+  try {
+    list.innerHTML = '<p class="info-message">⏳ Chargement des employés...</p>';
+    
+    const url = `https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}/values/${encodeURIComponent(SHEET_EMPLOYEES)}?key=${API_KEY}`;
+    const response = await fetch(url);
+    const data = await response.json();
+    
+    if (!data.values || data.values.length === 0) {
+      list.innerHTML = '<p class="info-message" style="color:#ff6b6b;">❌ Aucune donnée trouvée.</p>';
+      return;
+    }
+
+    const rows = data.values;
+    let headerIndex = -1;
+    
     for (let i = 0; i < rows.length; i++) {
-      if (rows[i] && headerKeywords.some(keyword => 
-        rows[i].some(cell => cell && cell.toString().includes(keyword))
+      if (rows[i] && rows[i].some(cell => 
+        cell && (cell.toString().includes("Prénom / Nom") || cell.toString().includes("ID Unique"))
       )) {
-        return i;
+        headerIndex = i;
+        break;
       }
     }
-    return -1;
-  },
-
-  sanitizeCell(cell) {
-    return cell ? cell.toString().trim() : "";
-  },
-
-  isValidRow(row, nameIndex = 2) {
-    const name = Utils.sanitizeCell(row[nameIndex]);
-    return name && 
-           name !== "Prénom / Nom" && 
-           name !== "Démission/Licenciement" &&
-           !CONFIG.SECTIONS_TO_IGNORE.includes(name);
-  },
-
-  showToast(message, type = 'info') {
-    const toast = document.createElement('div');
-    toast.className = `toast ${type}`;
     
-    if (type === 'loading') {
-      toast.innerHTML = `<div class="spinner"></div><span>${message}</span>`;
-    } else {
-      toast.textContent = message;
-    }
-    
-    document.body.appendChild(toast);
-    setTimeout(() => toast.classList.add('visible'), 50);
-    
-    if (type !== 'loading') {
-      setTimeout(() => {
-        toast.classList.remove('visible');
-        setTimeout(() => toast.remove(), 400);
-      }, 3000);
-    }
-    
-    return toast;
-  },
-
-  log(emoji, message, data) {
-    console.log(`${emoji} ${message}`, data || '');
-  },
-
-  async fetchWithErrorHandling(url, options = {}) {
-    try {
-      const response = await fetch(url, options);
-      if (!response.ok) {
-        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
-      }
-      return await response.json();
-    } catch (error) {
-      Utils.log('❌', 'Erreur de chargement:', error);
-      throw error;
-    }
-  },
-
-  saveDarkMode(isDark) {
-    localStorage.setItem('darkMode', isDark ? 'true' : 'false');
-  },
-
-  loadDarkMode() {
-    return localStorage.getItem('darkMode') === 'true';
-  }
-};
-
-// ==================== NAVIGATION ====================
-const Navigation = {
-  init() {
-    document.querySelectorAll('#main-nav .nav-item').forEach(item => {
-      item.addEventListener('click', () => this.switchTab(item));
-    });
-  },
-
-  switchTab(item) {
-    document.querySelectorAll('#main-nav .nav-item').forEach(i => 
-      i.classList.remove('active')
-    );
-    item.classList.add('active');
-
-    const tabName = item.dataset.tab;
-    STATE.currentTab = tabName;
-    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-    document.getElementById(`tab-${tabName}`).classList.add('active');
-
-    Utils.log('📑', `Navigation vers: ${tabName}`);
-  }
-};
-
-// ==================== MODE SOMBRE ====================
-const DarkMode = {
-  init() {
-    const moon = document.getElementById('moon');
-    
-    if (Utils.loadDarkMode()) {
-      document.body.classList.add('dark-mode');
-    }
-
-    moon.addEventListener('click', () => this.toggle(moon));
-  },
-
-  toggle(moon) {
-    const isDark = document.body.classList.toggle('dark-mode');
-    moon.classList.add('rotate');
-    setTimeout(() => moon.classList.remove('rotate'), 600);
-    Utils.saveDarkMode(isDark);
-    Utils.log('🌙', `Mode sombre: ${isDark ? 'ON' : 'OFF'}`);
-  }
-};
-
-// ==================== GESTION DES EMPLOYÉS ====================
-const Employees = {
-  async load() {
-    if (!Auth.hasPermission('employee')) {
-      document.getElementById('employee-list').innerHTML = '<div class="access-denied"><h2>🔒 Accès refusé</h2><p>Vous n\'avez pas les permissions nécessaires pour voir cette section.</p></div>';
+    if (headerIndex === -1) {
+      list.innerHTML = '<p class="info-message" style="color:#ff6b6b;">❌ En-tête introuvable.</p>';
       return;
     }
 
-    const list = document.getElementById('employee-list');
-    
-    try {
-      list.innerHTML = '<p class="info-message">⏳ Chargement des employés...</p>';
-      
-      const url = Utils.getSheetUrl(CONFIG.SHEET_EMPLOYEES);
-      const data = await Utils.fetchWithErrorHandling(url);
-      
-      if (!data.values || data.values.length === 0) {
-        list.innerHTML = '<p class="info-message" style="color:#ff6b6b;">❌ Aucune donnée trouvée.</p>';
-        return;
-      }
+    const dataRows = rows.slice(headerIndex + 1);
+    const unique = new Set();
 
-      const headerIndex = Utils.findHeaderIndex(data.values);
-      if (headerIndex === -1) {
-        list.innerHTML = '<p class="info-message" style="color:#ff6b6b;">❌ En-tête introuvable.</p>';
-        return;
-      }
-
-      const dataRows = data.values.slice(headerIndex + 1);
-      const unique = new Set();
-
-      STATE.allEmployees = dataRows
-        .filter(row => Utils.isValidRow(row, 2))
-        .map(r => ({
-          id: Utils.sanitizeCell(r[1]),
-          nom: Utils.sanitizeCell(r[2]),
-          rib: Utils.sanitizeCell(r[3]),
-          grade: Utils.sanitizeCell(r[4]),
-          tel: Utils.sanitizeCell(r[5]),
-          discord: Utils.sanitizeCell(r[6]),
-          gmail: Utils.sanitizeCell(r[8]),
-          diplome: Utils.sanitizeCell(r[9]),
-          entree: Utils.sanitizeCell(r[10]),
-          sortie: Utils.sanitizeCell(r[11]),
-          sanction: Utils.sanitizeCell(r[12]),
-          retrait: Utils.sanitizeCell(r[13])
-        }))
-        .filter(e => {
-          if (!e.nom || !e.id || unique.has(e.nom)) return false;
-          unique.add(e.nom);
-          return true;
-        });
-
-      Utils.log('✅', `Employés chargés: ${STATE.allEmployees.length}`);
-      STATE.filteredEmployees = [...STATE.allEmployees];
-      this.display(STATE.filteredEmployees);
-
-    } catch (error) {
-      list.innerHTML = `
-        <div class="info-message" style="color:#ff6b6b;">
-          <p style="font-size:1.3rem; margin-bottom:10px;">❌ Erreur de chargement</p>
-          <p>${error.message}</p>
-        </div>
-      `;
-    }
-  },
-
-  display(employees) {
-    const list = document.getElementById('employee-list');
-    list.innerHTML = '';
-
-    if (employees.length === 0) {
-      list.innerHTML = '<p class="info-message">Aucun employé trouvé.</p>';
-      return;
-    }
-
-    employees.forEach((emp, index) => {
-      const card = document.createElement('div');
-      card.className = 'employee-card';
-      card.setAttribute('data-id', emp.id);
-
-      const sanctionStyles = {
-        'Avertissement 1': { bg: 'linear-gradient(145deg,#FFD700,#FFC107)', pulse: true },
-        'Avertissement 2': { bg: 'linear-gradient(145deg,#FF8C00,#FF7F50)', pulse: true },
-        'Licenciement': { bg: 'linear-gradient(145deg,#FF3333,#CC0000)', pulse: true }
-      };
-
-      const style = sanctionStyles[emp.sanction];
-      if (style) {
-        card.style.background = style.bg;
-        if (style.pulse) card.classList.add('pulse');
-      }
-
-      card.innerHTML = `
-        <div class="employee-name">${emp.nom || 'Sans nom'}</div>
-        <div class="employee-grade">${emp.grade || 'Sans grade'}</div>
-      `;
-
-      card.addEventListener('click', () => this.showDetails(index));
-      list.appendChild(card);
-    });
-  },
-
-  showDetails(index) {
-    const emp = STATE.filteredEmployees[index];
-    document.getElementById('employee-list').style.display = 'none';
-    const details = document.getElementById('employee-details');
-    details.style.display = 'block';
-
-    let diplomeHTML = '<em>Aucun diplôme</em>';
-    if (emp.diplome) {
-      const links = emp.diplome.split(/\s+/).filter(l => l.startsWith('http'));
-      if (links.length > 0) {
-        diplomeHTML = links.map((link, i) => {
-          const label = links.length === 1 ? 'Diplôme' : `Diplôme ${i + 1}`;
-          return `<button class="diplome-btn" onclick="Employees.openDiplome('${link}')">🎓 ${label}</button>`;
-        }).join('');
-      }
-    }
-
-    let gradeHTML;
-    if (Auth.hasPermission('rh')) {
-      gradeHTML = `
-        <div class="grade-wrapper">
-          <button type="button">${emp.grade || 'Sélectionner'}</button>
-          <ul>
-            ${CONFIG.GRADES.map(g => `
-              <li onclick="Employees.updateGrade('${emp.id}','${g}')">${g}</li>
-            `).join('')}
-          </ul>
-        </div>
-      `;
-    } else {
-      gradeHTML = emp.grade || '-';
-    }
-
-    details.innerHTML = `
-      <span class="close-btn" onclick="Employees.closeDetails()">✖</span>
-      <h2>👤 ${emp.nom}</h2>
-      <table>
-        <tr><td>ID Unique</td><td>${emp.id || '-'}</td></tr>
-        <tr><td>RIB</td><td>${emp.rib || '-'}</td></tr>
-        <tr><td>Grade</td><td>${gradeHTML}</td></tr>
-        <tr><td>Téléphone</td><td>${emp.tel || '-'}</td></tr>
-        <tr><td>Discord</td><td>${emp.discord || '-'}</td></tr>
-        <tr><td>Gmail</td><td>${emp.gmail || '-'}</td></tr>
-        <tr><td>🎓 Diplôme</td><td>${diplomeHTML}</td></tr>
-        <tr><td>Date d'entrée</td><td>${emp.entree || '-'}</td></tr>
-        <tr><td>Date de sortie</td><td>${emp.sortie || '-'}</td></tr>
-        <tr><td>Sanction</td><td>${emp.sanction || '-'}</td></tr>
-        <tr><td>Date retrait</td><td>${emp.retrait || '-'}</td></tr>
-      </table>
-    `;
-
-    if (Auth.hasPermission('rh')) {
-      document.querySelectorAll('.grade-wrapper').forEach(wrapper => {
-        const btn = wrapper.querySelector('button');
-        btn.addEventListener('click', (e) => {
-          e.stopPropagation();
-          document.querySelectorAll('.grade-wrapper').forEach(w => {
-            if (w !== wrapper) w.classList.remove('open');
-          });
-          wrapper.classList.toggle('open');
-        });
+    allEmployees = dataRows
+      .filter(row => {
+        const nom = row[2] ? row[2].toString().trim() : '';
+        return nom && 
+               nom !== "Prénom / Nom" && 
+               nom !== "Démission/Licenciement";
+      })
+      .map(r => ({
+        id: r[1] ? r[1].toString().trim() : '',
+        nom: r[2] ? r[2].toString().trim() : '',
+        grade: r[4] ? r[4].toString().trim() : '',
+        tel: r[5] ? r[5].toString().trim() : '',
+        discord: r[6] ? r[6].toString().trim() : ''
+      }))
+      .filter(e => {
+        if (!e.nom || !e.id || unique.has(e.nom)) return false;
+        unique.add(e.nom);
+        return true;
       });
 
-      document.addEventListener('click', () => {
-        document.querySelectorAll('.grade-wrapper').forEach(w => w.classList.remove('open'));
-      });
-    }
+    console.log('✅ Employés chargés:', allEmployees.length);
+    filteredEmployees = [...allEmployees];
+    displayEmployees(filteredEmployees);
 
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-  },
-
-  closeDetails() {
-    document.getElementById('employee-details').style.display = 'none';
-    document.getElementById('employee-list').style.display = 'flex';
-  },
-
-  openDiplome(url) {
-    const popup = document.createElement('div');
-    popup.className = 'diplome-popup';
-    popup.innerHTML = `
-      <div class="popup-content">
-        <span class="popup-close" onclick="this.parentElement.parentElement.remove()">✖</span>
-        <iframe src="${url.replace('/view', '/preview')}" allowfullscreen></iframe>
+  } catch (error) {
+    list.innerHTML = `
+      <div class="info-message" style="color:#ff6b6b;">
+        <p style="font-size:1.3rem; margin-bottom:10px;">❌ Erreur de chargement</p>
+        <p>${error.message}</p>
       </div>
     `;
-    document.body.appendChild(popup);
-    popup.addEventListener('click', (e) => {
-      if (e.target === popup) popup.remove();
-    });
-  },
-
-  async updateGrade(empId, newGrade) {
-    if (!Auth.hasPermission('rh')) {
-      Utils.showToast('❌ Permission refusée', 'error');
-      return;
-    }
-
-    const url = "https://script.google.com/macros/s/AKfycbx8UcKzySSIaXfkXCBFGz3Dj90lmJ2qZ-W5aiMLWy2dEU7gAXzvX-NOZ1hzGkLbVFwt/exec";
-    const proxy = "https://corsproxy.io/?";
-    
-    const toast = Utils.showToast('⏳ Mise à jour...', 'loading');
-
-    try {
-      await fetch(proxy + encodeURIComponent(url), {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ id: empId, grade: newGrade })
-      });
-
-      const emp = STATE.allEmployees.find(e => e.id === empId);
-      if (emp) {
-        emp.grade = newGrade;
-        const filtered = STATE.filteredEmployees.find(e => e.id === empId);
-        if (filtered) filtered.grade = newGrade;
-        
-        document.querySelectorAll('.grade-wrapper button').forEach(btn => {
-          btn.textContent = newGrade;
-        });
-      }
-
-      toast.remove();
-      Utils.showToast('✅ Grade mis à jour !', 'success');
-
-    } catch (error) {
-      toast.remove();
-      Utils.showToast('❌ Erreur réseau', 'error');
-      Utils.log('❌', 'Erreur updateGrade:', error);
-    }
-  },
-
-  setupSearch() {
-    document.getElementById('search-bar').addEventListener('input', (e) => {
-      const query = e.target.value.toLowerCase();
-      STATE.filteredEmployees = STATE.allEmployees.filter(emp =>
-        emp.nom.toLowerCase().includes(query) ||
-        emp.grade.toLowerCase().includes(query)
-      );
-      this.display(STATE.filteredEmployees);
-    });
-  },
-
-  async refresh() {
-    if (!Auth.hasPermission('employee')) return;
-    
-    try {
-      const url = Utils.getSheetUrl(CONFIG.SHEET_EMPLOYEES);
-      const data = await Utils.fetchWithErrorHandling(url);
-      
-      if (!data.values) return;
-
-      const headerIndex = Utils.findHeaderIndex(data.values);
-      if (headerIndex === -1) return;
-
-      const dataRows = data.values.slice(headerIndex + 1);
-      const unique = new Set();
-
-      const latestEmployees = dataRows
-        .filter(row => Utils.isValidRow(row, 2))
-        .map(r => ({
-          id: Utils.sanitizeCell(r[1]),
-          nom: Utils.sanitizeCell(r[2]),
-          rib: Utils.sanitizeCell(r[3]),
-          grade: Utils.sanitizeCell(r[4]),
-          tel: Utils.sanitizeCell(r[5]),
-          discord: Utils.sanitizeCell(r[6]),
-          gmail: Utils.sanitizeCell(r[8]),
-          diplome: Utils.sanitizeCell(r[9]),
-          entree: Utils.sanitizeCell(r[10]),
-          sortie: Utils.sanitizeCell(r[11]),
-          sanction: Utils.sanitizeCell(r[12]),
-          retrait: Utils.sanitizeCell(r[13])
-        }))
-        .filter(e => {
-          if (!e.nom || !e.id || unique.has(e.nom)) return false;
-          unique.add(e.nom);
-          return true;
-        });
-
-      STATE.allEmployees = latestEmployees;
-      STATE.filteredEmployees = [...latestEmployees];
-
-      latestEmployees.forEach(emp => {
-        const card = document.querySelector(`.employee-card[data-id="${emp.id}"]`);
-        if (card) {
-          card.innerHTML = `
-            <div class="employee-name">${emp.nom}</div>
-            <div class="employee-grade">${emp.grade}</div>
-          `;
-
-          card.style.background = '';
-          card.classList.remove('pulse');
-
-          const sanctionStyles = {
-            'Avertissement 1': { bg: 'linear-gradient(145deg,#FFD700,#FFC107)', pulse: true },
-            'Avertissement 2': { bg: 'linear-gradient(145deg,#FF8C00,#FF7F50)', pulse: true },
-            'Licenciement': { bg: 'linear-gradient(145deg,#FF3333,#CC0000)', pulse: true }
-          };
-
-          const style = sanctionStyles[emp.sanction];
-          if (style) {
-            card.style.background = style.bg;
-            if (style.pulse) card.classList.add('pulse');
-          }
-        }
-      });
-
-    } catch (error) {
-      Utils.log('⚠️', 'Erreur refresh employés:', error);
-    }
   }
-};
+}
 
-// ==================== GESTION DU RECRUTEMENT ====================
-const Recruitment = {
-  async load() {
-    if (!Auth.hasPermission('rh')) {
-      document.getElementById('recruitment-list').innerHTML = '<div class="access-denied"><h2>🔒 Accès refusé</h2><p>Vous devez être RH ou Administrateur pour accéder à cette section.</p></div>';
-      return;
-    }
+function displayEmployees(employees) {
+  const list = document.getElementById('employee-list');
+  list.innerHTML = '';
 
-    const list = document.getElementById('recruitment-list');
-    
-    try {
-      list.innerHTML = '<p class="info-message">⏳ Chargement des candidats...</p>';
-      
-      const url = Utils.getSheetUrl(CONFIG.SHEET_RECRUITMENT);
-      const data = await Utils.fetchWithErrorHandling(url);
-      
-      if (!data.values || data.values.length === 0) {
-        list.innerHTML = '<p class="info-message" style="color:#ff6b6b;">❌ Aucune donnée trouvée.</p>';
-        return;
-      }
+  if (employees.length === 0) {
+    list.innerHTML = '<p class="info-message">Aucun employé trouvé.</p>';
+    return;
+  }
 
-      const headerIndex = Utils.findHeaderIndex(data.values, ["ID", "Prénom", "Nom"]);
-      if (headerIndex === -1) {
-        list.innerHTML = '<p class="info-message" style="color:#ff6b6b;">❌ En-tête introuvable.</p>';
-        return;
-      }
-
-      const dataRows = data.values.slice(headerIndex + 1);
-      const unique = new Set();
-
-      STATE.allCandidates = dataRows
-        .map(r => ({
-          id: Utils.sanitizeCell(r[3]),
-          nom: Utils.sanitizeCell(r[4]),
-          rib: Utils.sanitizeCell(r[5]),
-          gmail: Utils.sanitizeCell(r[6]),
-          tel: Utils.sanitizeCell(r[7]),
-          discord: Utils.sanitizeCell(r[8]),
-          permis: Utils.sanitizeCell(r[9]),
-          diplome: Utils.sanitizeCell(r[11]),
-          age: Utils.sanitizeCell(r[12]),
-          carteIdentite: Utils.sanitizeCell(r[13]),
-          motivations: Utils.sanitizeCell(r[14]),
-          qualites: Utils.sanitizeCell(r[15]),
-          dispo: [r[16], r[17], r[18], r[19], r[20], r[21], r[22]].map(d => Utils.sanitizeCell(d)),
-          pourquoi: Utils.sanitizeCell(r[23]),
-          illegal: Utils.sanitizeCell(r[24]),
-          mecano: Utils.sanitizeCell(r[25]),
-          statut: Utils.sanitizeCell(r[26]) || "En attente"
-        }))
-        .filter(c => {
-          if (!c.nom || unique.has(c.nom)) return false;
-          unique.add(c.nom);
-          return true;
-        })
-        .reverse();
-
-      Utils.log('✅', `Candidats chargés: ${STATE.allCandidates.length}`);
-      STATE.filteredCandidates = [...STATE.allCandidates];
-      this.display(STATE.filteredCandidates);
-
-    } catch (error) {
-      list.innerHTML = `
-        <div class="info-message" style="color:#ff6b6b;">
-          <p style="font-size:1.3rem; margin-bottom:10px;">❌ Erreur de chargement</p>
-          <p>${error.message}</p>
-        </div>
-      `;
-    }
-  },
-
-  display(candidates) {
-    const list = document.getElementById('recruitment-list');
-    list.innerHTML = '';
-
-    if (candidates.length === 0) {
-      list.innerHTML = '<p class="info-message">Aucun candidat trouvé.</p>';
-      return;
-    }
-
-    candidates.forEach((cand, index) => {
-      const card = document.createElement('div');
-      card.className = 'recruit-card';
-      card.setAttribute('data-id', cand.id);
-
-      const statusStyles = {
-        'Accepté': 'linear-gradient(145deg,#4CAF50,#45a049)',
-        'Refusé': 'linear-gradient(145deg,#FF3333,#CC0000)'
-      };
-
-      if (statusStyles[cand.statut]) {
-        card.style.background = statusStyles[cand.statut];
-      }
-
-      card.innerHTML = `
-        <div class="employee-name">${cand.nom}</div>
-        <div class="employee-grade">${cand.statut}</div>
-      `;
-
-      card.addEventListener('click', () => this.showDetails(index));
-      list.appendChild(card);
-    });
-  },
-
-  showDetails(index) {
-    const cand = STATE.filteredCandidates[index];
-    document.getElementById('recruitment-list').style.display = 'none';
-    const details = document.getElementById('recruit-details');
-    details.style.display = 'block';
-
-    const dispoHTML = cand.dispo
-      .map((d, i) => d ? `<li>${CONFIG.DAYS[i]}: ${d}</li>` : '')
-      .join('');
-
-    details.innerHTML = `
-      <span class="close-btn" onclick="Recruitment.closeDetails()">✖</span>
-      <h2>👤 ${cand.nom}</h2>
-      <table>
-        <tr><td>ID Unique</td><td>${cand.id || '-'}</td></tr>
-        <tr><td>RIB</td><td>${cand.rib || '-'}</td></tr>
-        <tr><td>Gmail</td><td>${cand.gmail || '-'}</td></tr>
-        <tr><td>Téléphone</td><td>${cand.tel || '-'}</td></tr>
-        <tr><td>Discord</td><td>${cand.discord || '-'}</td></tr>
-        <tr><td>Permis</td><td>${cand.permis || '-'}</td></tr>
-        <tr><td>Diplômes</td><td>${cand.diplome || '<em>Non renseigné</em>'}</td></tr>
-        <tr><td>Âge</td><td>${cand.age || '-'}</td></tr>
-        <tr><td>Carte d'identité</td><td>${cand.carteIdentite || '-'}</td></tr>
-        <tr><td>Motivations</td><td>${cand.motivations || '-'}</td></tr>
-        <tr><td>Qualités / Défauts</td><td>${cand.qualites || '-'}</td></tr>
-        <tr><td>Disponibilités</td><td><ul style="list-style:none;padding:0">${dispoHTML || '<li>Non renseignées</li>'}</ul></td></tr>
-        <tr><td>Pourquoi vous</td><td>${cand.pourquoi || '-'}</td></tr>
-        <tr><td>Activité illégale</td><td>${cand.illegal || '-'}</td></tr>
-        <tr><td>Qu'est-ce qu'un mécano</td><td>${cand.mecano || '-'}</td></tr>
-        <tr>
-          <td>Statut</td>
-          <td>
-            <select onchange="Recruitment.updateStatus('${cand.id}', this.value)">
-              <option value="En attente" ${cand.statut === 'En attente' ? 'selected' : ''}>En attente</option>
-              <option value="Accepté" ${cand.statut === 'Accepté' ? 'selected' : ''}>Accepté</option>
-              <option value="Refusé" ${cand.statut === 'Refusé' ? 'selected' : ''}>Refusé</option>
-            </select>
-          </td>
-        </tr>
-      </table>
+  employees.forEach(emp => {
+    const card = document.createElement('div');
+    card.className = 'employee-card';
+    card.innerHTML = `
+      <div class="employee-name">${emp.nom || 'Sans nom'}</div>
+      <div class="employee-grade">${emp.grade || 'Sans grade'}</div>
     `;
+    list.appendChild(card);
+  });
+}
 
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-  },
+// ==================== NAVIGATION ====================
 
-  closeDetails() {
-    document.getElementById('recruit-details').style.display = 'none';
-    document.getElementById('recruitment-list').style.display = 'flex';
-  },
+function switchTab(item) {
+  document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
+  item.classList.add('active');
 
-  updateStatus(id, status) {
-    const cand = STATE.allCandidates.find(c => c.id === id);
-    if (cand) {
-      cand.statut = status;
-      const filtered = STATE.filteredCandidates.find(c => c.id === id);
-      if (filtered) filtered.statut = status;
-    }
-    
-    Utils.showToast(`Statut mis à jour: ${status}`, 'success');
-  },
+  const tabName = item.dataset.tab;
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.getElementById(`tab-${tabName}`).classList.add('active');
+}
 
-  setupSearch() {
-    document.getElementById('search-bar-recrutement').addEventListener('input', (e) => {
-      const query = e.target.value.toLowerCase();
-      STATE.filteredCandidates = STATE.allCandidates.filter(c =>
-        c.nom.toLowerCase().includes(query) ||
-        c.statut.toLowerCase().includes(query)
-      );
-      this.display(STATE.filteredCandidates);
-    });
-  }
-};
+// ==================== DARK MODE ====================
 
-// ==================== APPLICATION PRINCIPALE ====================
-const App = {
-  async init() {
-    Utils.log('🚀', 'Initialisation de l\'application...');
+function toggleDarkMode() {
+  const moon = document.getElementById('moon');
+  const isDark = document.body.classList.toggle('dark-mode');
+  moon.classList.add('rotate');
+  setTimeout(() => moon.classList.remove('rotate'), 600);
+  localStorage.setItem('darkMode', isDark ? 'true' : 'false');
+}
 
-    Navigation.init();
-    DarkMode.init();
-    
-    await Employees.load();
-    await Recruitment.load();
-    
-    Employees.setupSearch();
-    Recruitment.setupSearch();
+// ==================== UTILITAIRES ====================
 
-    setInterval(() => {
-      if (STATE.currentTab === 'employe') {
-        Employees.refresh();
-      }
-    }, CONFIG.REFRESH_INTERVAL);
+function showToast(message, type = 'info') {
+  const toast = document.createElement('div');
+  toast.className = `toast ${type}`;
+  toast.textContent = message;
+  
+  document.body.appendChild(toast);
+  setTimeout(() => toast.classList.add('visible'), 50);
+  
+  setTimeout(() => {
+    toast.classList.remove('visible');
+    setTimeout(() => toast.remove(), 400);
+  }, 3000);
+}
 
-    Utils.log('✅', 'Application initialisée !');
-  }
-};
+// ==================== GESTION DES ERREURS ====================
+
+function handleError(errorCode) {
+  const errors = {
+    'no_code': 'Code d\'autorisation manquant',
+    'not_employee': 'Votre ID Discord n\'est pas dans la liste des employés',
+    'auth_failed': 'Échec de l\'authentification',
+    'session_error': 'Erreur de création de session'
+  };
+  
+  showToast(`❌ ${errors[errorCode] || 'Erreur inconnue'}`, 'error');
+  showLogin();
+}
 
 // ==================== DÉMARRAGE ====================
+
 document.addEventListener('DOMContentLoaded', () => {
-  Auth.init();
+  console.log('🚀 Démarrage de l\'application...');
+  console.log('🔗 Backend URL:', BACKEND_URL);
+  
+  // Vérifier les paramètres URL
+  const params = new URLSearchParams(window.location.search);
+  const authStatus = params.get('auth');
+  const error = params.get('error');
+  
+  if (authStatus === 'success') {
+    console.log('✅ Authentification réussie, vérification session...');
+    checkAuth();
+    window.history.replaceState({}, document.title, window.location.pathname);
+  } else if (error) {
+    console.log('❌ Erreur:', error);
+    handleError(error);
+  } else {
+    checkAuth();
+  }
+  
+  // Charger le dark mode
+  if (localStorage.getItem('darkMode') === 'true') {
+    document.body.classList.add('dark-mode');
+  }
 });
 </script>
 
 </body>
 </html>
-
-
